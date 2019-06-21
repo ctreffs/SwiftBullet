@@ -10,5 +10,23 @@
 			<integer>0</integer>
 		</dict>
 	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>Bullet</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BulletTests</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CBullet</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
 </dict>
 </plist>

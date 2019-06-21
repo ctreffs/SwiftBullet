@@ -1,0 +1,23 @@
+module CBullet [system][extern_c] {
+  header "shims.h"
+  link "Bullet2FileLoader"
+  link "Bullet3Collision"
+  link "Bullet3Common"
+  link "Bullet3Dynamics"
+  link "Bullet3Geometry"
+  link "Bullet3OpenCL_clew"
+  link "BulletCollision"
+  link "BulletDynamics"
+  link "BulletFileLoader"
+  link "BulletInverseDynamics"
+  link "BulletInverseDynamicsUtils"
+  link "BulletRobotics"
+  link "BulletSoftBody"
+  link "BulletWorldImporter"
+  link "BulletXmlWorldImporter"
+  link "ConvexDecomposition"
+  link "GIMPACTUtils"
+  link "HACD"
+  link "LinearMath"
+  export *
+}
