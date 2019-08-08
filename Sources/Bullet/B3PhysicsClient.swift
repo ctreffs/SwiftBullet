@@ -164,6 +164,11 @@ open class B3PhysicsClient {
         return try __createCommand { b3RequestActualStateCommandInit(hPhysicsClient, bodyUniqueId) }
     }
 
+    /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
+    func applyExternalForceCommandInit() throws -> b3SharedMemoryCommandHandle {
+        return try __createCommand { b3ApplyExternalForceCommandInit(hPhysicsClient) }
+    }
+
     /// b3InitRemoveCollisionShapeCommand
     func removeCollisionShapeCommand(_ collisionShapeId: Int32) throws -> b3SharedMemoryCommandHandle {
         return try __createCommand { b3InitRemoveCollisionShapeCommand(hPhysicsClient, collisionShapeId) }
@@ -302,6 +307,15 @@ open class B3PhysicsClient {
     /// b3ChangeDynamicsInfoSetContactProcessingThreshold
     func changeDynamicsInfoSetContactProcessingThreshold(_ commandHandle: b3SharedMemoryCommandHandle, _ bodyUniqueId: Int32, _ linkIndex: Int32, contactProcessingThreshold: Double) throws {
         try __checkSuccess { b3ChangeDynamicsInfoSetContactProcessingThreshold(commandHandle, bodyUniqueId, linkIndex, contactProcessingThreshold) }
+    }
+
+    func applyExternalForce(_ commandHandle: b3SharedMemoryCommandHandle, _ bodyUniqueId: Int32, _ linkIndex: Int32, force: inout [Double], position: inout [Double], flag: Int32) {
+
+        b3ApplyExternalForce(commandHandle, bodyUniqueId, linkIndex, &force, &position, flag)
+    }
+
+    func applyExternalTorque(_ commandHandle: b3SharedMemoryCommandHandle, _ bodyUniqueId: Int32, _ linkIndex: Int32, torque: inout [Double], flag: Int32) {
+        b3ApplyExternalTorque(commandHandle, bodyUniqueId, linkIndex, &torque, flag)
     }
 
     /// b3GetStatusActualState

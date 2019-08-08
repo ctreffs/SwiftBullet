@@ -7,18 +7,26 @@
 
 #if canImport(simd)
 import simd
-public typealias Vector3 = simd.double3
-public typealias Vector4 = simd.double4
+public typealias Vector3 = SIMD3<Double>
+public typealias Vector4 = SIMD4<Double>
 
 extension SIMD3: Sequence {
     public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
         return [x, y, z].makeIterator()
+    }
+
+    public var array: [Scalar] {
+        return [Scalar](self)
     }
 }
 
 extension SIMD4: Sequence {
     public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
         return [x, y, z, w].makeIterator()
+    }
+
+    public var array: [Scalar] {
+        return [Scalar](self)
     }
 }
 

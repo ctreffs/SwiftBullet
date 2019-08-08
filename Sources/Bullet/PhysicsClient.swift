@@ -197,14 +197,14 @@ public class PhysicsClient: B3PhysicsClient {
         let inertialPos = [Double](baseInertialFramePosition)
         let inertialOri = [Double](baseInertialFrameOrientation)
 
-        let baseIndex = b3CreateMultiBodyBase(cmd,
-                                              mass,
-                                              collisionShapeUniqueId,
-                                              visualShapeUniqueId,
-                                              basePos,
-                                              baseOri,
-                                              inertialPos,
-                                              inertialOri)
+        _ = b3CreateMultiBodyBase(cmd,
+                                      mass,
+                                      collisionShapeUniqueId,
+                                      visualShapeUniqueId,
+                                      basePos,
+                                      baseOri,
+                                      inertialPos,
+                                      inertialOri)
 
         let status = try submitClientCommandAndWaitStatus(cmd)
         guard status.1 == CMD_CREATE_MULTI_BODY_COMPLETED else {
@@ -271,6 +271,33 @@ public class PhysicsClient: B3PhysicsClient {
         guard status.1 == CMD_RESET_SIMULATION_COMPLETED else {
             throw Error.commandFailedWithStatus(status.1)
         }
+    }
+
+    public func applyExternalForce(bodyUniqueId: Int32, linkIndex: Int32, force: Vector3, position: Vector3) throws {
+        let cmd = try applyExternalForceCommandInit()
+        var _force: [Double] = force.array
+        var _position: [Double] = position.array
+
+        // use EF_WORLD_FRAME & EF_LINK_FRAME
+        applyExternalForce(cmd, bodyUniqueId, linkIndex, force: &_force, position: &_position, flag: 0)
+
+        let status = try submitClientCommandAndWaitStatus(cmd)
+        guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
+            throw Error.commandFailedWithStatus(status.1)
+        }
+    }
+
+    public func applyExternalTorque(bodyUniqueId: Int32, linkIndex: Int32, torque: Vector3) throws {
+        let cmd = try applyExternalForceCommandInit()
+
+        var _torque = torque.array
+
+        applyExternalTorque(cmd, bodyUniqueId, linkIndex, torque: &_torque, flag: 0)
+
+        let status = try submitClientCommandAndWaitStatus(cmd)
+                guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
+                    throw Error.commandFailedWithStatus(status.1)
+                }
     }
 }
 
