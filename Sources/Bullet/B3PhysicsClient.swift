@@ -9,7 +9,7 @@ import CBullet
 
 open class B3PhysicsClient {
     public enum Error: Swift.Error {
-        case couldNotConnectToDirectPhysics
+        case couldNotConnectToPhysics(String)
         case commandFailed(Int32)
         case commandFailedWithStatus(EnumSharedMemoryServerStatus)
         case couldNotCreateCommand
@@ -28,11 +28,37 @@ open class B3PhysicsClient {
         return __hPhysicsClient
     }
 
-    public init() throws {
-        guard let hPhysicsClient = b3ConnectPhysicsDirect() else {
-            throw Error.couldNotConnectToDirectPhysics
+    /// Create TCP physics connection.
+    /// Send physics commands using TCP networking.
+    public convenience init(TCP hostName: String, _ port: UInt16) throws {
+        let _hostName = hostName.withCString { $0 }
+        guard let hPhysicsClient = b3ConnectPhysicsTCP(_hostName, Int32(port)) else {
+            throw Error.couldNotConnectToPhysics("TCP host:\(hostName) port: \(port)")
         }
-        self.__hPhysicsClient = hPhysicsClient
+        self.init(hPhysicsClient)
+    }
+
+    /// Create UDP physics connection.
+    /// Send physics commands using UDP networking.
+    public convenience init(UDP hostName: String, _ port: UInt16) throws {
+        let _hostName = hostName.withCString { $0 }
+        guard let hPhysicsClient = b3ConnectPhysicsUDP(_hostName, Int32(port)) else {
+            throw Error.couldNotConnectToPhysics("UDP host:\(hostName) port: \(port)")
+        }
+        self.init(hPhysicsClient)
+    }
+
+    /// Create direct physics connection.
+    /// Directly execute commands without transport (no shared memory, UDP, socket, grpc etc).
+    public convenience init() throws {
+        guard let hPhysicsClient = b3ConnectPhysicsDirect() else {
+            throw Error.couldNotConnectToPhysics("direct")
+        }
+        self.init(hPhysicsClient)
+    }
+
+    init(_ clientHandle: b3PhysicsClientHandle) {
+        self.__hPhysicsClient = clientHandle
     }
 
     deinit {

@@ -7,7 +7,7 @@
 
 import CBullet
 
-public class PhysicsClient: B3PhysicsClient {
+public final class PhysicsClient: B3PhysicsClient {
     public func simulateStep() throws {
         let cmd = try initStepSimulationCommand()
         let status = try submitClientCommandAndWaitStatus(cmd)
@@ -198,13 +198,13 @@ public class PhysicsClient: B3PhysicsClient {
         let inertialOri = [Double](baseInertialFrameOrientation)
 
         _ = b3CreateMultiBodyBase(cmd,
-                                      mass,
-                                      collisionShapeUniqueId,
-                                      visualShapeUniqueId,
-                                      basePos,
-                                      baseOri,
-                                      inertialPos,
-                                      inertialOri)
+                                  mass,
+                                  collisionShapeUniqueId,
+                                  visualShapeUniqueId,
+                                  basePos,
+                                  baseOri,
+                                  inertialPos,
+                                  inertialOri)
 
         let status = try submitClientCommandAndWaitStatus(cmd)
         guard status.1 == CMD_CREATE_MULTI_BODY_COMPLETED else {
@@ -295,9 +295,9 @@ public class PhysicsClient: B3PhysicsClient {
         applyExternalTorque(cmd, bodyUniqueId, linkIndex, torque: &_torque, flag: 0)
 
         let status = try submitClientCommandAndWaitStatus(cmd)
-                guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
-                    throw Error.commandFailedWithStatus(status.1)
-                }
+        guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
+            throw Error.commandFailedWithStatus(status.1)
+        }
     }
 }
 
