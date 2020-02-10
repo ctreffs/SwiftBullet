@@ -66,7 +66,7 @@ open class B3PhysicsClient {
     }
 
     var canSubmitCommand: Bool {
-        return b3CanSubmitCommand(__hPhysicsClient) == 1
+        b3CanSubmitCommand(__hPhysicsClient) == 1
     }
 
     @discardableResult
@@ -127,82 +127,82 @@ open class B3PhysicsClient {
     }
 
     func createBoxShapeCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateBoxShapeCommandInit(hPhysicsClient) }
+        try __createCommand { b3CreateBoxShapeCommandInit(hPhysicsClient) }
     }
     func createCollisionShapeCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateCollisionShapeCommandInit(hPhysicsClient) }
+        try __createCommand { b3CreateCollisionShapeCommandInit(hPhysicsClient) }
     }
 
     func createCustomCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateCustomCommand(hPhysicsClient) }
+        try __createCommand { b3CreateCustomCommand(hPhysicsClient) }
     }
 
     func createMultiBodyCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateMultiBodyCommandInit(hPhysicsClient) }
+        try __createCommand { b3CreateMultiBodyCommandInit(hPhysicsClient) }
     }
 
     func createVisualShapeCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateVisualShapeCommandInit(hPhysicsClient) }
+        try __createCommand { b3CreateVisualShapeCommandInit(hPhysicsClient) }
     }
 
     func createPoseCommand(_ bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreatePoseCommandInit(hPhysicsClient, bodyUniqueId) }
+        try __createCommand { b3CreatePoseCommandInit(hPhysicsClient, bodyUniqueId) }
     }
 
     func createPoseCommand2(_ commandHandle: b3SharedMemoryCommandHandle, bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreatePoseCommandInit2(commandHandle, bodyUniqueId) }
+        try __createCommand { b3CreatePoseCommandInit2(commandHandle, bodyUniqueId) }
     }
 
     func createRaycastCommand(rayFromWorld: Vector3, rayToWorld: Vector3) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateRaycastCommandInit(hPhysicsClient, rayFromWorld.x, rayFromWorld.y, rayFromWorld.z, rayToWorld.x, rayToWorld.y, rayToWorld.z) }
+        try __createCommand { b3CreateRaycastCommandInit(hPhysicsClient, rayFromWorld.x, rayFromWorld.y, rayFromWorld.z, rayToWorld.x, rayToWorld.y, rayToWorld.z) }
     }
 
     func createRaycastBatchCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateRaycastBatchCommandInit(hPhysicsClient) }
+        try __createCommand { b3CreateRaycastBatchCommandInit(hPhysicsClient) }
     }
 
     func createSensorCommand(_ bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3CreateSensorCommandInit(hPhysicsClient, bodyUniqueId) }
+        try __createCommand { b3CreateSensorCommandInit(hPhysicsClient, bodyUniqueId) }
     }
 
     func getDynamicsInfoCommand(_ bodyUniqueId: Int32, _ linkIndex: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3GetDynamicsInfoCommandInit(hPhysicsClient, bodyUniqueId, linkIndex) }
+        try __createCommand { b3GetDynamicsInfoCommandInit(hPhysicsClient, bodyUniqueId, linkIndex) }
     }
 
     // b3RequestCollisionInfoCommandInit
     func requestCollisionInfoCommand(_ bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3RequestCollisionInfoCommandInit(hPhysicsClient, bodyUniqueId) }
+        try __createCommand { b3RequestCollisionInfoCommandInit(hPhysicsClient, bodyUniqueId) }
     }
 
     func initStepSimulationCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitStepSimulationCommand(hPhysicsClient) }
+        try __createCommand { b3InitStepSimulationCommand(hPhysicsClient) }
     }
 
     func initPhysicsParamCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitPhysicsParamCommand(hPhysicsClient) }
+        try __createCommand { b3InitPhysicsParamCommand(hPhysicsClient) }
     }
 
     func changeDynamicsInfo() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitChangeDynamicsInfo(hPhysicsClient) }
+        try __createCommand { b3InitChangeDynamicsInfo(hPhysicsClient) }
     }
 
     func requestActualStateCommand(_ bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3RequestActualStateCommandInit(hPhysicsClient, bodyUniqueId) }
+        try __createCommand { b3RequestActualStateCommandInit(hPhysicsClient, bodyUniqueId) }
     }
 
     /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
     func applyExternalForceCommandInit() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3ApplyExternalForceCommandInit(hPhysicsClient) }
+        try __createCommand { b3ApplyExternalForceCommandInit(hPhysicsClient) }
     }
 
     /// b3InitRemoveCollisionShapeCommand
     func removeCollisionShapeCommand(_ collisionShapeId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitRemoveCollisionShapeCommand(hPhysicsClient, collisionShapeId) }
+        try __createCommand { b3InitRemoveCollisionShapeCommand(hPhysicsClient, collisionShapeId) }
     }
 
     /// b3InitRemoveBodyCommand
     func removeBodyCommand(_ bodyUniqueId: Int32) throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitRemoveBodyCommand(hPhysicsClient, bodyUniqueId) }
+        try __createCommand { b3InitRemoveBodyCommand(hPhysicsClient, bodyUniqueId) }
     }
 
     // int b3PhysicsParamSetGravity(b3SharedMemoryCommandHandle commandHandle, double gravx, double gravy, double gravz);
@@ -221,12 +221,12 @@ open class B3PhysicsClient {
     }
 
     func getStatus(enum statusHandle: b3SharedMemoryStatusHandle) -> EnumSharedMemoryServerStatus {
-        return EnumSharedMemoryServerStatus(rawValue: UInt32(b3GetStatusType(statusHandle)))
+        EnumSharedMemoryServerStatus(rawValue: UInt32(b3GetStatusType(statusHandle)))
     }
 
     /// b3GetStatusBodyIndex
     func getStatusBodyIndex(_ status: b3SharedMemoryStatusHandle) -> Int32 {
-        return b3GetStatusBodyIndex(status)
+        b3GetStatusBodyIndex(status)
     }
 
     /// b3CreateCollisionShapeAddBox
@@ -237,7 +237,7 @@ open class B3PhysicsClient {
 
     /// b3CreateCollisionShapeAddSphere
     func createCollisionShapeAddSphere(_ commandHandle: b3SharedMemoryCommandHandle, radius: Double) throws -> Int32 {
-        return b3CreateCollisionShapeAddSphere(commandHandle, radius)
+        b3CreateCollisionShapeAddSphere(commandHandle, radius)
     }
 
     /// b3CreateBoxCommandSetStartPosition
@@ -336,7 +336,6 @@ open class B3PhysicsClient {
     }
 
     func applyExternalForce(_ commandHandle: b3SharedMemoryCommandHandle, _ bodyUniqueId: Int32, _ linkIndex: Int32, force: inout [Double], position: inout [Double], flag: Int32) {
-
         b3ApplyExternalForce(commandHandle, bodyUniqueId, linkIndex, &force, &position, flag)
     }
 
@@ -386,7 +385,7 @@ open class B3PhysicsClient {
 
     /// b3GetStatusCollisionShapeUniqueId
     func getStatusCollisionShapeUniqueId(_ status: b3SharedMemoryStatusHandle) -> Int32 {
-        return b3GetStatusCollisionShapeUniqueId(status)
+        b3GetStatusCollisionShapeUniqueId(status)
     }
 
     /// b3GetRaycastInformation
@@ -451,12 +450,12 @@ open class B3PhysicsClient {
 
     /// b3GetNumBodies
     func getNumBodies() -> Int32 {
-        return b3GetNumBodies(hPhysicsClient)
+        b3GetNumBodies(hPhysicsClient)
     }
 
     /// b3InitResetSimulationCommand
     func resetSimulationCommand() throws -> b3SharedMemoryCommandHandle {
-        return try __createCommand { b3InitResetSimulationCommand(hPhysicsClient) }
+        try __createCommand { b3InitResetSimulationCommand(hPhysicsClient) }
     }
 }
 

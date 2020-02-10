@@ -12,21 +12,21 @@ public typealias Vector4 = SIMD4<Double>
 
 extension SIMD3: Sequence {
     public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
-        return [x, y, z].makeIterator()
+        [x, y, z].makeIterator()
     }
 
     public var array: [Scalar] {
-        return [Scalar](self)
+        [Scalar](self)
     }
 }
 
 extension SIMD4: Sequence {
     public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
-        return [x, y, z, w].makeIterator()
+        [x, y, z, w].makeIterator()
     }
 
     public var array: [Scalar] {
-        return [Scalar](self)
+        [Scalar](self)
     }
 }
 

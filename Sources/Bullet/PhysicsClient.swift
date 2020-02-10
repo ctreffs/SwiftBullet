@@ -261,7 +261,7 @@ public final class PhysicsClient: B3PhysicsClient {
     }
 
     public func numBodies() -> Int {
-        return Int(self.getNumBodies())
+        Int(self.getNumBodies())
     }
 
     /// "Reset the simulation: remove all objects and start from an empty world."

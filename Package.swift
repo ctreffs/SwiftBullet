@@ -22,6 +22,6 @@ let package = Package(
             providers: [
                 .brew(["bullet"]),
                 .apt(["libbullet-dev"])
-            ])
+        ])
     ]
 )

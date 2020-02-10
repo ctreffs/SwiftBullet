@@ -1,8 +1,7 @@
-import XCTest
 @testable import Bullet
+import XCTest
 
 final class SwiftBulletTests: XCTestCase {
-
     var client: PhysicsClient!
 
     override func setUp() {
@@ -26,7 +25,7 @@ final class SwiftBulletTests: XCTestCase {
             let uid = try client.createMultiBody(mass: mass, basePosition: pos, baseOrientation: ori)
 
             try client.setPhysicsEngineParameters(.gravity([0, 0, -9.81]),
-                                                  .fixedTimeStep(1.0/frequency))
+                                                  .fixedTimeStep(1.0 / frequency))
 
             let (p1, o1) = try client.getPositionAndOrientation(bodyUniqueId: uid)
             XCTAssertEqual(p1, pos)
@@ -38,7 +37,7 @@ final class SwiftBulletTests: XCTestCase {
 
             let (p2, _) = try client.getPositionAndOrientation(bodyUniqueId: uid)
             XCTAssertNotEqual(p2, p1)
-            XCTAssertEqual(p2, Vector3(0.0, 100.0, 95.42164611816406))
+            XCTAssertEqual(p2, Vector3(0.0, 100.0, 95.421_646_118_164_06))
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -75,8 +74,7 @@ final class SwiftBulletTests: XCTestCase {
         XCTAssertEqual(hits.count, 1)
 
         XCTAssertEqual(hits[0].objectUniqueId, 0)
-        XCTAssertEqual(hits[0].fraction, 0.1538461446762085)
-
+        XCTAssertEqual(hits[0].fraction, 0.153_846_144_676_208_5)
     }
 
     func testBatchRayCast() {
@@ -126,7 +124,6 @@ final class SwiftBulletTests: XCTestCase {
     }
 
     func testApplyExternalForce() {
-
         var cBox1: Int32 = -1
         var box1: Int32 = -1
 
@@ -138,22 +135,19 @@ final class SwiftBulletTests: XCTestCase {
                                                            baseOrientation: [0, 0, 0, 1]))
 
         XCTAssertNoThrow(try client.applyExternalForce(bodyUniqueId: box1, linkIndex: -1, force: Vector3(1, 0, 0), position: Vector3(0, 0, 0)))
-
     }
 
     func testApplyExternalTorque() {
+        var cBox1: Int32 = -1
+        var box1: Int32 = -1
 
-            var cBox1: Int32 = -1
-            var box1: Int32 = -1
+        XCTAssertNoThrow(cBox1 = try client.createCollisionShape(.box(halfExtents: [1, 1, 1])))
 
-            XCTAssertNoThrow(cBox1 = try client.createCollisionShape(.box(halfExtents: [1, 1, 1])))
+        XCTAssertNoThrow(box1 = try client.createMultiBody(mass: 0,
+                                                           collisionShapeUniqueId: cBox1,
+                                                           basePosition: [0, 0, 0],
+                                                           baseOrientation: [0, 0, 0, 1]))
 
-            XCTAssertNoThrow(box1 = try client.createMultiBody(mass: 0,
-                                                               collisionShapeUniqueId: cBox1,
-                                                               basePosition: [0, 0, 0],
-                                                               baseOrientation: [0, 0, 0, 1]))
-
-            XCTAssertNoThrow(try client.applyExternalTorque(bodyUniqueId: box1, linkIndex: -1, torque: [1, 2, 3]))
-
-        }
+        XCTAssertNoThrow(try client.applyExternalTorque(bodyUniqueId: box1, linkIndex: -1, torque: [1, 2, 3]))
+    }
 }
