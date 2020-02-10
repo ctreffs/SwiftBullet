@@ -1,7 +1,8 @@
 import XCTest
 
-import SwiftBulletTests
+import BulletTests
 
 var tests = [XCTestCaseEntry]()
-tests += SwiftBulletTests.allTests()
+tests += BulletTests.__allTests()
+
 XCTMain(tests)
