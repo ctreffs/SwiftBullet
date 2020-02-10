@@ -31,8 +31,8 @@ open class B3PhysicsClient {
     /// Create TCP physics connection.
     /// Send physics commands using TCP networking.
     public convenience init(TCP hostName: String, _ port: UInt16) throws {
-        let _hostName = hostName.withCString { $0 }
-        guard let hPhysicsClient = b3ConnectPhysicsTCP(_hostName, Int32(port)) else {
+        let cHostName = hostName.withCString { $0 }
+        guard let hPhysicsClient = b3ConnectPhysicsTCP(cHostName, Int32(port)) else {
             throw Error.couldNotConnectToPhysics("TCP host:\(hostName) port: \(port)")
         }
         self.init(hPhysicsClient)
@@ -41,8 +41,8 @@ open class B3PhysicsClient {
     /// Create UDP physics connection.
     /// Send physics commands using UDP networking.
     public convenience init(UDP hostName: String, _ port: UInt16) throws {
-        let _hostName = hostName.withCString { $0 }
-        guard let hPhysicsClient = b3ConnectPhysicsUDP(_hostName, Int32(port)) else {
+        let cHostName = hostName.withCString { $0 }
+        guard let hPhysicsClient = b3ConnectPhysicsUDP(cHostName, Int32(port)) else {
             throw Error.couldNotConnectToPhysics("UDP host:\(hostName) port: \(port)")
         }
         self.init(hPhysicsClient)
@@ -479,9 +479,9 @@ public struct RayHitInfo {
     }
 }
 
-private extension B3PhysicsClient {
+extension B3PhysicsClient {
     // swiftlint:disable:next identifier_name
-    func __createCommand(_ closure: () -> b3SharedMemoryCommandHandle?) throws -> b3SharedMemoryCommandHandle {
+    private func __createCommand(_ closure: () -> b3SharedMemoryCommandHandle?) throws -> b3SharedMemoryCommandHandle {
         guard let handle: b3SharedMemoryCommandHandle = closure() else {
             throw Error.couldNotCreateCommand
         }
@@ -489,7 +489,7 @@ private extension B3PhysicsClient {
     }
 
     // swiftlint:disable:next identifier_name
-    func __checkSuccess(_ closure: () -> Int32) throws {
+    private func __checkSuccess(_ closure: () -> Int32) throws {
         let status = closure()
         guard status == 0 else {
             throw Error.commandFailed(status)

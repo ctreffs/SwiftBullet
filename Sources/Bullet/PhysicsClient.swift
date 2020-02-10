@@ -275,11 +275,11 @@ public final class PhysicsClient: B3PhysicsClient {
 
     public func applyExternalForce(bodyUniqueId: Int32, linkIndex: Int32, force: Vector3, position: Vector3) throws {
         let cmd = try applyExternalForceCommandInit()
-        var _force: [Double] = force.array
-        var _position: [Double] = position.array
+        var dforce: [Double] = force.array
+        var dposition: [Double] = position.array
 
         // use EF_WORLD_FRAME & EF_LINK_FRAME
-        applyExternalForce(cmd, bodyUniqueId, linkIndex, force: &_force, position: &_position, flag: 0)
+        applyExternalForce(cmd, bodyUniqueId, linkIndex, force: &dforce, position: &dposition, flag: 0)
 
         let status = try submitClientCommandAndWaitStatus(cmd)
         guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
@@ -290,9 +290,9 @@ public final class PhysicsClient: B3PhysicsClient {
     public func applyExternalTorque(bodyUniqueId: Int32, linkIndex: Int32, torque: Vector3) throws {
         let cmd = try applyExternalForceCommandInit()
 
-        var _torque = torque.array
+        var dtorque = torque.array
 
-        applyExternalTorque(cmd, bodyUniqueId, linkIndex, torque: &_torque, flag: 0)
+        applyExternalTorque(cmd, bodyUniqueId, linkIndex, torque: &dtorque, flag: 0)
 
         let status = try submitClientCommandAndWaitStatus(cmd)
         guard status.1 == CMD_CLIENT_COMMAND_COMPLETED else {
@@ -302,16 +302,17 @@ public final class PhysicsClient: B3PhysicsClient {
 }
 
 public typealias Threads = Int32
-public extension Threads {
+
+extension Threads {
     /// "Specify 0 to let Bullet decide,
     /// 1 (default) for single core execution,
     /// 2 or more to select the number of threads to use."},
-    static let auto: Int32 = 0
-    static let `default`: Int32 = 1
+    public static let auto: Int32 = 0
+    public static let `default`: Int32 = 1
 }
 
-public extension PhysicsClient {
-    enum DynamicsInfo {
+extension PhysicsClient {
+    public enum DynamicsInfo {
         case activationState(Int32)
         case angularDamping(Double)
         case ccdSweptSphereRadius(Double)
@@ -325,7 +326,7 @@ public extension PhysicsClient {
         case spinningFriction(Double)
     }
 
-    enum EngineParameter {
+    public enum EngineParameter {
         case allowedCcdPenetration(Double)
         case collisionFilterMode(Int32)
         case constraintSolverType(Int32)
@@ -353,7 +354,7 @@ public extension PhysicsClient {
         case realTimeSimulation(Bool)
     }
 
-    enum CollisionShape {
+    public enum CollisionShape {
         case box(halfExtents: Vector3)
         case sphere(radius: Double)
     }
