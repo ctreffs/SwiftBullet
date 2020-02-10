@@ -18,7 +18,6 @@ open class B3PhysicsClient {
         case usageFailure(String)
     }
 
-    // swiftlint:disable:next identifier_name
     private let __hPhysicsClient: b3PhysicsClientHandle
     private var hPhysicsClient: b3PhysicsClientHandle {
         guard canSubmitCommand else {
@@ -480,7 +479,6 @@ public struct RayHitInfo {
 }
 
 extension B3PhysicsClient {
-    // swiftlint:disable:next identifier_name
     private func __createCommand(_ closure: () -> b3SharedMemoryCommandHandle?) throws -> b3SharedMemoryCommandHandle {
         guard let handle: b3SharedMemoryCommandHandle = closure() else {
             throw Error.couldNotCreateCommand
@@ -488,7 +486,6 @@ extension B3PhysicsClient {
         return handle
     }
 
-    // swiftlint:disable:next identifier_name
     private func __checkSuccess(_ closure: () -> Int32) throws {
         let status = closure()
         guard status == 0 else {
