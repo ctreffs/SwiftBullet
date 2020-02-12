@@ -7,23 +7,16 @@
 
 import CBullet
 
-public protocol PhysicsCommand {
-    func makeCommand(_ build: PhysicsCommandBuilder) -> PhysicsCommandBuilder.Executable
-    func execute(on client: b3PhysicsClientHandle) throws
-}
-
-extension PhysicsCommand {
-    public func execute(on client: b3PhysicsClientHandle) throws {
-        let cmd = makeCommand(PhysicsCommandBuilder(client))
-        try cmd.execute()
-    }
-}
+public typealias CommandResult = Result<b3SharedMemoryCommandHandle, Swift.Error>
+public typealias StatusResult = Result<b3SharedMemoryStatusHandle, Swift.Error>
+public typealias SettableClosure = (PhysicsCommandBuilder.Settable, Int) -> PhysicsCommandBuilder.Settable
 
 public struct PhysicsCommandBuilder {
     enum Error: Swift.Error {
         case sharedMemoryHandleNil
-        case commandFailedWithStatusCode(Int32)
+        case commandFailedWithStatusCode(Int32, String, Int)
         case executionFailedWithStatus(EnumSharedMemoryServerStatus)
+        case idBelowZero(Int32)
     }
 
     let client: b3PhysicsClientHandle
@@ -32,38 +25,59 @@ public struct PhysicsCommandBuilder {
         self.client = client
     }
 
-    func command(_ closure: (b3PhysicsClientHandle) -> b3SharedMemoryCommandHandle?) -> Intermediate {
+    func command(_ closure: (b3PhysicsClientHandle) -> b3SharedMemoryCommandHandle?) -> Settable {
         guard let handle: b3SharedMemoryCommandHandle = closure(client) else {
             // TODO: fail with function parameters
-            return Intermediate(client, .failure(Error.sharedMemoryHandleNil))
+            return Settable(client, .failure(Error.sharedMemoryHandleNil))
         }
-        return Intermediate(client, .success(handle))
+        return Settable(client, .success(handle))
     }
 
-    public struct Intermediate {
+    public struct Settable {
         let client: b3PhysicsClientHandle
-        let cmd: Result<b3SharedMemoryCommandHandle, Swift.Error>
+        let cmd: CommandResult
 
-        init(_ client: b3PhysicsClientHandle, _ previousCommand: Result<b3SharedMemoryCommandHandle, Swift.Error>) {
+        init(_ client: b3PhysicsClientHandle, _ previousCommand: CommandResult) {
             self.client = client
             self.cmd = previousCommand
         }
 
-        func set(_ closure: (b3SharedMemoryCommandHandle) -> Int32) -> Intermediate {
+        func set(_ function: String = #function, _ line: Int = #line, _ closure: (b3SharedMemoryCommandHandle) -> Int32) -> Settable {
             switch cmd {
             case let .success(handle):
                 let status = closure(handle)
 
                 switch status {
                 case 0:
-                    return Intermediate(client, .success(handle))
+                    return Settable(client, .success(handle))
 
                 default:
-                    return Intermediate(client, .failure(Error.commandFailedWithStatusCode(status)))
+                    return Settable(client, .failure(Error.commandFailedWithStatusCode(status, function, line)))
                 }
 
             case let .failure(error):
-                return Intermediate(client, .failure(error))
+                return Settable(client, .failure(error))
+            }
+        }
+
+        func inject(_ closure: (Settable) -> Settable) -> Settable {
+            closure(self)
+        }
+
+        func injectIndexed(_ closures: [SettableClosure]) -> Settable {
+            closures.enumerated().reduce(self) { prev, next in
+                next.element(prev, next.offset)
+            }
+        }
+
+        func apply(_ function: String = #function, _ line: Int = #line, _ closure: (b3SharedMemoryCommandHandle) -> Void) -> Settable {
+            switch cmd {
+            case let .success(handle):
+                closure(handle)
+                return Settable(client, .success(handle))
+
+            case let .failure(error):
+                return Settable(client, .failure(error))
             }
         }
 
@@ -74,31 +88,72 @@ public struct PhysicsCommandBuilder {
 
     public struct Executable {
         let client: b3PhysicsClientHandle
-        let cmd: Result<b3SharedMemoryCommandHandle, Swift.Error>
+        let cmd: CommandResult
         let expectedStatus: EnumSharedMemoryServerStatus
 
-        init(_ client: b3PhysicsClientHandle, _ cmd: Result<b3SharedMemoryCommandHandle, Swift.Error>, _ expectedStatus: EnumSharedMemoryServerStatus) {
+        init(_ client: b3PhysicsClientHandle, _ cmd: CommandResult, _ expectedStatus: EnumSharedMemoryServerStatus) {
             self.client = client
             self.cmd = cmd
             self.expectedStatus = expectedStatus
         }
 
-        func execute() throws {
+        @discardableResult
+        func submit() -> StatusResult {
             switch cmd {
             case let .failure(error):
-                throw error
+                return .failure(error)
 
             case let .success(cmdHandle):
-                try executeCmdAndWait(cmdHandle)
+                return submitAndWaitStatus(cmdHandle)
             }
         }
 
-        func executeCmdAndWait(_ cmdHandle: b3SharedMemoryCommandHandle) throws {
+        private func submitAndWaitStatus(_ cmdHandle: b3SharedMemoryCommandHandle) -> StatusResult {
             let statusHandle: b3SharedMemoryStatusHandle = b3SubmitClientCommandAndWaitStatus(client, cmdHandle)
             let status = EnumSharedMemoryServerStatus(rawValue: UInt32(b3GetStatusType(statusHandle)))
             guard status == expectedStatus else {
-                throw Error.executionFailedWithStatus(status)
+                return .failure(Error.executionFailedWithStatus(status))
             }
+
+            return .success(statusHandle)
+        }
+    }
+}
+
+extension StatusResult {
+    func command(_ function: String = #function, _ line: Int = #line, expectedStatus: Int32 = 0, _ closure: (b3SharedMemoryStatusHandle) -> Int32) -> StatusResult {
+        switch self {
+        case let .success(statusHandle):
+            let status = closure(statusHandle)
+
+            switch status {
+            case expectedStatus:
+                return .success(statusHandle)
+
+            default:
+                return .failure(PhysicsCommandBuilder.Error.commandFailedWithStatusCode(status, function, line))
+            }
+
+        case let .failure(error):
+            return .failure(error)
+        }
+    }
+
+    func id(_ function: String = #function, _ line: Int = #line, _ closure: (b3SharedMemoryStatusHandle) -> Int32) -> Int32 {
+        switch self {
+        case let .success(statusHandle):
+            let id = closure(statusHandle)
+
+            guard id >= 0 else {
+                assertionFailure("Id below zero")
+                return -1
+            }
+
+            return id
+
+        case let .failure(error):
+            assertionFailure("\(error)")
+            return -1
         }
     }
 }
