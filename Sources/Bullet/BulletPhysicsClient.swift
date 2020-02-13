@@ -7,6 +7,7 @@
 
 import CBullet
 
+// https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsClientExample.cpp
 open class BulletPhysicsClient {
     internal let cmd: PCmd
     internal var build: PhysicsCommandBuilder {
@@ -36,6 +37,7 @@ open class BulletPhysicsClient {
         self.cmd = PCmd(clientHandle)
     }
 
+    @discardableResult
     public final func setPhysicsParameters(_ parameters: [PhysicsParameter]) -> StatusResult {
         build
             .command(b3InitPhysicsParamCommand)
@@ -44,11 +46,30 @@ open class BulletPhysicsClient {
             .submit()
     }
 
+    @discardableResult
     public final func stepSimulation() -> StatusResult {
         build
             .command(b3InitStepSimulationCommand)
             .expect(CMD_STEP_FORWARD_SIMULATION_COMPLETED)
             .submit()
+    }
+
+    public final func createCollisionShape(_ shapes: CollisionShape...) -> StatusResult {
+        build
+            .command(b3CreateCollisionShapeCommandInit)
+            .injectIndexed(shapes.map { $0.closure })
+            .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
+            .submit()
+    }
+
+    @discardableResult
+    public final func createCollisionShapeBox(position: Vector3 = .zero, orienation: Vector4 = .identity, halfExtents: Vector3) -> StatusResult {
+        createCollisionShape(.box(position: position, orientation: orienation, halfExtents: halfExtents))
+    }
+
+    @discardableResult
+    public final func createCollisionShapeSphere(position: Vector3 = .zero, orienation: Vector4 = .identity, radius: Double) -> StatusResult {
+        createCollisionShape(.sphere(position: position, orientation: orienation, radius: radius))
     }
 }
 

@@ -9,7 +9,6 @@ import Bullet
 import CBullet
 import XCTest
 
-// https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsClientExample.cpp
 final class BulletTests: XCTestCase {
     var client: BulletPhysicsClient!
 
@@ -24,7 +23,7 @@ final class BulletTests: XCTestCase {
 
     func testSetParameters() {
         let params: [PhysicsParameter] = [
-            .gravity(.init(x: .random(in: -10...10), y: .random(in: -10...10), z: .random(in: -10...10))),
+            .gravity(.random(in: -1000...1000)),
             .realTimeSimulation(true),
             .timeStep(.random(in: -1000...1000)),
             .numSubSteps(.random(in: 0...1000)),
@@ -40,6 +39,14 @@ final class BulletTests: XCTestCase {
             let result = client.stepSimulation()
             XCTAssertResultIsSuccess(result)
         }
+    }
+
+    func testCreateCollisionShapes() {
+        let sphereResult = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
+        XCTAssertResultIsSuccess(sphereResult)
+
+        let boxResult = client.createCollisionShapeBox(halfExtents: .random(in: 0.001...1000.0))
+        XCTAssertResultIsSuccess(boxResult)
     }
 
     /*func testCollisionShape() {
