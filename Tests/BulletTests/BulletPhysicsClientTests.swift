@@ -16,6 +16,7 @@ final class BulletPhysicsClientTests: XCTestCase {
         super.setUp()
         do {
             client = try BulletPhysicsClient(.direct)
+            XCTAssertEqual(client.numBodies, 0)
         } catch {
             fatalError(error.localizedDescription)
         }
@@ -59,7 +60,7 @@ final class BulletPhysicsClientTests: XCTestCase {
                                                  mass: .random(in: -10...10),
                                                  basePosition: .random(in: -10...10),
                                                  baseOrientation: .random(in: -10...10))
-
+        XCTAssertEqual(client.numBodies, 1)
         XCTAssertNotEqual(multiBodyId, .noId)
     }
 
@@ -74,6 +75,7 @@ final class BulletPhysicsClientTests: XCTestCase {
                                          basePosition: origPos,
                                          baseOrientation: origOri)
         XCTAssertNotEqual(box, .noId)
+        XCTAssertEqual(client.numBodies, 1)
 
         var pos: Vector3 = .zero
         var ori: Vector4 = .zero

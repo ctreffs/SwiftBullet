@@ -9,7 +9,8 @@ import CBullet
 
 // https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsClientExample.cpp
 open class BulletPhysicsClient {
-    let clientHandle: b3PhysicsClientHandle
+    @usableFromInline let clientHandle: b3PhysicsClientHandle
+
     let cmd: PCmd
     var build: PhysicsCommandBuilder {
         cmd.build
@@ -100,6 +101,10 @@ open class BulletPhysicsClient {
         var bodyId = multiBody.rawValue
         let status = requestActualStateCommand(bodyUniqueId: bodyId)
         return getActualPlacement(status, &bodyId, &position, &orientation)
+    }
+
+    @inlinable public final var numBodies: Int {
+        Int(b3GetNumBodies(clientHandle))
     }
 }
 
