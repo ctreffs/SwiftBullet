@@ -87,31 +87,19 @@ open class BulletPhysicsClient {
     public final func createMultiBody(collisionShape: CollisionShapeId,
                                       visualShape: VisualShapeId,
                                       mass: Double,
-                                      basePosition: Vector3 = .zero,
-                                      baseOrientation: Vector4 = .identity,
+                                      basePosition: Vector3,
+                                      baseOrientation: Vector4,
                                       baseInertialFramePosition: Vector3 = .zero,
-                                      baseInertialFrameOrientation: Vector4 = .identity) -> MemoryStatusHandleResult {
-        basePosition.unsafeScalars { basePosPtr in
-            baseOrientation.unsafeScalars { baseOriPtr in
-                baseInertialFramePosition.unsafeScalars { baseInertialFramePosPtr in
-                    baseInertialFrameOrientation.unsafeScalars { baseInertialFrameOriPtr in
-                        build
-                            .command(b3CreateMultiBodyCommandInit)
-                            .set { b3CreateMultiBodyBase($0,
-                                                         mass,
-                                                         collisionShape.rawValue,
-                                                         visualShape.rawValue,
-                                                         basePosPtr,
-                                                         baseOriPtr,
-                                                         baseInertialFramePosPtr,
-                                                         baseInertialFrameOriPtr)
-                            }
-                            .expect(CMD_CREATE_MULTI_BODY_COMPLETED)
-                            .submit()
-                    }
-                }
-            }
-        }
+                                      baseInertialFrameOrientation: Vector4 = .identity) -> MultiBodyId {
+        let status = makeMultiBody(collisionShape: collisionShape, visualShape: visualShape, mass: mass, basePosition: basePosition, baseOrientation: baseOrientation, baseInertialFramePosition: baseInertialFramePosition, baseInertialFrameOrientation: baseInertialFrameOrientation)
+        return getMultiBodyUniqueId(status)
+    }
+
+    @discardableResult
+    public final func getActualPositionAndOrientation(multiBody: MultiBodyId, position: inout Vector3, orientation: inout Vector4) -> MemoryStatusHandleResult {
+        var bodyId = multiBody.rawValue
+        let status = requestActualStateCommand(bodyUniqueId: bodyId)
+        return getActualPlacement(status, &bodyId, &position, &orientation)
     }
 }
 
@@ -164,6 +152,10 @@ extension BulletPhysicsClient {
         CollisionShapeId(rawValue: status.id { b3GetStatusCollisionShapeUniqueId($0) })
     }
 
+    final func getMultiBodyUniqueId(_ status: MemoryStatusHandleResult) -> MultiBodyId {
+        MultiBodyId(rawValue: status.id { b3GetStatusBodyIndex($0) })
+    }
+
     func requestCollisionInfo(bodyUniqueId: Int32) -> MemoryStatusHandleResult {
         build
             .command { b3RequestCollisionInfoCommandInit($0, bodyUniqueId) }
@@ -209,5 +201,35 @@ extension BulletPhysicsClient {
 
                 return status
             }
+    }
+
+    func makeMultiBody(collisionShape: CollisionShapeId,
+                       visualShape: VisualShapeId,
+                       mass: Double,
+                       basePosition: Vector3,
+                       baseOrientation: Vector4,
+                       baseInertialFramePosition: Vector3,
+                       baseInertialFrameOrientation: Vector4) -> MemoryStatusHandleResult {
+        basePosition.unsafeScalars { basePosPtr in
+            baseOrientation.unsafeScalars { baseOriPtr in
+                baseInertialFramePosition.unsafeScalars { baseInertialFramePosPtr in
+                    baseInertialFrameOrientation.unsafeScalars { baseInertialFrameOriPtr in
+                        build
+                            .command(b3CreateMultiBodyCommandInit)
+                            .set { b3CreateMultiBodyBase($0,
+                                                         mass,
+                                                         collisionShape.rawValue,
+                                                         visualShape.rawValue,
+                                                         basePosPtr,
+                                                         baseOriPtr,
+                                                         baseInertialFramePosPtr,
+                                                         baseInertialFrameOriPtr)
+                            }
+                        .expect(CMD_CREATE_MULTI_BODY_COMPLETED)
+                        .submit()
+                    }
+                }
+            }
+        }
     }
 }

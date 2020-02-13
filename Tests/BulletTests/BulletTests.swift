@@ -54,34 +54,36 @@ final class BulletTests: XCTestCase {
 
     func testCreateMultiBody() {
         let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
-        let multiBodyResult = client.createMultiBody(collisionShape: sphereId,
-                                                     visualShape: .noId,
-                                                     mass: .random(in: -10...10))
+        let multiBodyId = client.createMultiBody(collisionShape: sphereId,
+                                                 visualShape: .noId,
+                                                 mass: .random(in: -10...10),
+                                                 basePosition: .random(in: -10...10),
+                                                 baseOrientation: .random(in: -10...10))
 
-        XCTAssertResultIsSuccess(multiBodyResult)
+        XCTAssertNotEqual(multiBodyId, .noId)
     }
 
-    /*func testCollisionShape() {
-     let boxStatus = cmd.createCollisionShape(.box(position: .zero, orientation: .identity, halfExtents: .one))
-     let boxId = cmd.getStatusCollisionShapeUniqueId(boxStatus)
+    func testGetActualPlacement() {
+        let origPos: Vector3 = .init(x: 1, y: 2, z: 3)
+        let origOri: Vector4 = .init(0.258_198_887_109_756_47, 0.516_397_833_824_157_71, 0.774_596_691_131_591_8, 0.258_198_887_109_756_47)
 
-     let multiBodyStatus = cmd.createMultiBody(collisionShapeUniqueId: boxId,
-     visualShapeUniqueId: -1,
-     mass: 10,
-     basePosition: .zero,
-     baseOrientation: .identity,
-     baseInertialFramePosition: .zero,
-     baseInertialFrameOrientation: .identity)
-     var multiBodyId = cmd.getStatusBodyIndex(multiBodyStatus)
+        let collisionBox = client.createCollisionShapeBox(halfExtents: .init(repeating: 0.5))
+        let box = client.createMultiBody(collisionShape: collisionBox,
+                                         visualShape: .noId,
+                                         mass: 9.81,
+                                         basePosition: origPos,
+                                         baseOrientation: origOri)
+        XCTAssertNotEqual(box, .noId)
 
-     var posActual: SIMD3<Double> = .zero
-     var oriActual: SIMD4<Double> = .zero
+        var pos: Vector3 = .zero
+        var ori: Vector4 = .zero
 
-     let actualStateStatus = cmd.requestActualStateCommand(bodyUniqueId: multiBodyId)
-     let actualStatus = cmd.getActualPlacement(actualStateStatus, &multiBodyId, &posActual, &oriActual)
+        let status = client.getActualPositionAndOrientation(multiBody: box, position: &pos, orientation: &ori)
+        XCTAssertResultIsSuccess(status)
 
-     print(actualStatus)
-     }*/
+        XCTAssertEqual(pos, origPos)
+        XCTAssertEqual(ori, origOri)
+    }
 }
 
 func XCTAssertResultIsSuccess<Value, Error>(_ result: Result<Value, Error>) where Error: Swift.Error {

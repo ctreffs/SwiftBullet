@@ -29,3 +29,8 @@ public typealias VisualShapeId = UniqueId<VisualShape>
 extension VisualShapeId {
     public static let noId = VisualShapeId(rawValue: -1)
 }
+
+public typealias MultiBodyId = UniqueId<MultiBody>
+extension MultiBodyId {
+    public static let noId = MultiBodyId(rawValue: -1)
+}
