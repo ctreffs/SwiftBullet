@@ -9,7 +9,8 @@ import CBullet
 
 public typealias CommandResult = Result<b3SharedMemoryCommandHandle, Swift.Error>
 public typealias StatusResult = Result<b3SharedMemoryStatusHandle, Swift.Error>
-public typealias SettableClosure = (PhysicsCommandBuilder.Settable, Int) -> PhysicsCommandBuilder.Settable
+public typealias SettableClosure = (PhysicsCommandBuilder.Settable) -> PhysicsCommandBuilder.Settable
+public typealias SettableIndexedClosure = (PhysicsCommandBuilder.Settable, Int) -> PhysicsCommandBuilder.Settable
 
 public struct PhysicsCommandBuilder {
     enum Error: Swift.Error {
@@ -60,11 +61,17 @@ public struct PhysicsCommandBuilder {
             }
         }
 
-        func inject(_ closure: (Settable) -> Settable) -> Settable {
+        func injectOne(_ closure: (Settable) -> Settable) -> Settable {
             closure(self)
         }
 
-        func injectIndexed(_ closures: [SettableClosure]) -> Settable {
+        func inject(_ closures: [SettableClosure]) -> Settable {
+            closures.reduce(self) { prev, next in
+                next(prev)
+            }
+        }
+
+        func injectIndexed(_ closures: [SettableIndexedClosure]) -> Settable {
             closures.enumerated().reduce(self) { prev, next in
                 next.element(prev, next.offset)
             }
