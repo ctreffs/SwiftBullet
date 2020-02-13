@@ -42,11 +42,23 @@ final class BulletTests: XCTestCase {
     }
 
     func testCreateCollisionShapes() {
-        let sphereResult = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
-        XCTAssertResultIsSuccess(sphereResult)
+        let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
+        XCTAssertNotEqual(sphereId, .noId)
 
-        let boxResult = client.createCollisionShapeBox(halfExtents: .random(in: 0.001...1000.0))
-        XCTAssertResultIsSuccess(boxResult)
+        let boxId = client.createCollisionShapeBox(halfExtents: .random(in: 0.001...1000.0))
+        XCTAssertNotEqual(boxId, .noId)
+
+        let capsuleId = client.createCollisionShapeCapsule(radius: .random(in: 0.001...1000.0), height: .random(in: 0.001...1000.0))
+        XCTAssertNotEqual(capsuleId, .noId)
+    }
+
+    func testCreateMultiBody() {
+        let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
+        let multiBodyResult = client.createMultiBody(collisionShape: sphereId,
+                                                     visualShape: .noId,
+                                                     mass: .random(in: -10...10))
+
+        XCTAssertResultIsSuccess(multiBodyResult)
     }
 
     /*func testCollisionShape() {
@@ -76,6 +88,16 @@ func XCTAssertResultIsSuccess<Value, Error>(_ result: Result<Value, Error>) wher
     switch result {
     case let .failure(error):
         XCTFail("Result is failure: \(error)")
+
+    default:
+        XCTAssertTrue(true)
+    }
+}
+
+func XCTAssertResultIsFailure<Value, Error>(_ result: Result<Value, Error>) where Error: Swift.Error {
+    switch result {
+    case let .success(value):
+        XCTFail("Result is success: \(value)")
 
     default:
         XCTAssertTrue(true)

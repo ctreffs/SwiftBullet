@@ -7,8 +7,8 @@
 
 import CBullet
 
-public typealias CommandResult = Result<b3SharedMemoryCommandHandle, Swift.Error>
-public typealias StatusResult = Result<b3SharedMemoryStatusHandle, Swift.Error>
+public typealias MemoryCommandHandleResult = Result<b3SharedMemoryCommandHandle, Swift.Error>
+public typealias MemoryStatusHandleResult = Result<b3SharedMemoryStatusHandle, Swift.Error>
 public typealias SettableClosure = (PhysicsCommandBuilder.Settable) -> PhysicsCommandBuilder.Settable
 public typealias SettableIndexedClosure = (PhysicsCommandBuilder.Settable, Int) -> PhysicsCommandBuilder.Settable
 
@@ -36,9 +36,9 @@ public struct PhysicsCommandBuilder {
 
     public struct Settable {
         let client: b3PhysicsClientHandle
-        let cmd: CommandResult
+        let cmd: MemoryCommandHandleResult
 
-        init(_ client: b3PhysicsClientHandle, _ previousCommand: CommandResult) {
+        init(_ client: b3PhysicsClientHandle, _ previousCommand: MemoryCommandHandleResult) {
             self.client = client
             self.cmd = previousCommand
         }
@@ -95,17 +95,17 @@ public struct PhysicsCommandBuilder {
 
     public struct Executable {
         let client: b3PhysicsClientHandle
-        let cmd: CommandResult
+        let cmd: MemoryCommandHandleResult
         let expectedStatus: EnumSharedMemoryServerStatus
 
-        init(_ client: b3PhysicsClientHandle, _ cmd: CommandResult, _ expectedStatus: EnumSharedMemoryServerStatus) {
+        init(_ client: b3PhysicsClientHandle, _ cmd: MemoryCommandHandleResult, _ expectedStatus: EnumSharedMemoryServerStatus) {
             self.client = client
             self.cmd = cmd
             self.expectedStatus = expectedStatus
         }
 
         @discardableResult
-        func submit() -> StatusResult {
+        func submit() -> MemoryStatusHandleResult {
             switch cmd {
             case let .failure(error):
                 return .failure(error)
@@ -115,7 +115,7 @@ public struct PhysicsCommandBuilder {
             }
         }
 
-        private func submitAndWaitStatus(_ cmdHandle: b3SharedMemoryCommandHandle) -> StatusResult {
+        private func submitAndWaitStatus(_ cmdHandle: b3SharedMemoryCommandHandle) -> MemoryStatusHandleResult {
             let statusHandle: b3SharedMemoryStatusHandle = b3SubmitClientCommandAndWaitStatus(client, cmdHandle)
             let status = EnumSharedMemoryServerStatus(rawValue: UInt32(b3GetStatusType(statusHandle)))
             guard status == expectedStatus else {
@@ -127,8 +127,8 @@ public struct PhysicsCommandBuilder {
     }
 }
 
-extension StatusResult {
-    func command(_ function: String = #function, _ line: Int = #line, expectedStatus: Int32 = 0, _ closure: (b3SharedMemoryStatusHandle) -> Int32) -> StatusResult {
+extension MemoryStatusHandleResult {
+    func command(_ function: String = #function, _ line: Int = #line, expectedStatus: Int32 = 0, _ closure: (b3SharedMemoryStatusHandle) -> Int32) -> MemoryStatusHandleResult {
         switch self {
         case let .success(statusHandle):
             let status = closure(statusHandle)
