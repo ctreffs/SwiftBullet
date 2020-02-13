@@ -17,6 +17,7 @@ public struct PhysicsCommandBuilder {
         case sharedMemoryHandleNil
         case commandFailedWithStatusCode(Int32, String, Int)
         case executionFailedWithStatus(EnumSharedMemoryServerStatus)
+        case canNotSubmitCommand
         case idBelowZero(Int32)
     }
 

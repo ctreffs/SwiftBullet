@@ -7,6 +7,7 @@
 
 import CBullet
 
+// swiftlint:disable identifier_name
 open class B3PhysicsClient {
     public enum Error: Swift.Error {
         case couldNotConnectToPhysics(String)
