@@ -127,4 +127,70 @@ final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertEqual(cast3[0].positionWorld.y, 2.5)
         XCTAssertEqual(cast3[0].positionWorld.z, 0)
     }
+
+    func testApplyExternalForce() {
+        let shapeCol = client.createCollisionShapeSphere(radius: 1.0)
+        let shape = client.createMultiBody(collisionShape: shapeCol, visualShape: .noId, mass: 1, basePosition: .zero, baseOrientation: .identity)
+
+        var pos: Vector3 = .init(repeating: .nan)
+        var ori: Vector4 = .init(repeating: .nan)
+
+        let stat1 = client.getActualPositionAndOrientation(multiBody: shape,
+                                                           position: &pos,
+                                                           orientation: &ori)
+
+        XCTAssertResultIsSuccess(stat1)
+        XCTAssertEqual(pos, .zero)
+        XCTAssertEqual(ori, .identity)
+
+        let stat2 = client.applyExternalForce(bodyId: shape,
+                                              linkId: .noId,
+                                              force: .init(x: 100, y: 0, z: 0),
+                                              position: .init(x: 0, y: 10, z: 0),
+                                              flag: EF_WORLD_FRAME)
+        XCTAssertResultIsSuccess(stat2)
+
+        client.stepSimulation()
+
+        let stat3 = client.getActualPositionAndOrientation(multiBody: shape,
+                                                           position: &pos,
+                                                           orientation: &ori)
+
+        XCTAssertResultIsSuccess(stat3)
+        XCTAssertNotEqual(pos, .zero)
+        XCTAssertNotEqual(ori, .identity)
+    }
+
+    func testApplyExternalTorque() {
+        let shapeCol = client.createCollisionShapeSphere(radius: 1.0)
+        let shape = client.createMultiBody(collisionShape: shapeCol, visualShape: .noId, mass: 1, basePosition: .zero, baseOrientation: .identity)
+
+        var pos: Vector3 = .init(repeating: .nan)
+        var ori: Vector4 = .init(repeating: .nan)
+
+        let stat1 = client.getActualPositionAndOrientation(multiBody: shape,
+                                                           position: &pos,
+                                                           orientation: &ori)
+
+        XCTAssertResultIsSuccess(stat1)
+        XCTAssertEqual(pos, .zero)
+        XCTAssertEqual(ori, .identity)
+
+        let stat2 = client.applyExternalTorque(bodyId: shape,
+                                               linkId: .noId,
+                                               torque: .init(x: 1000, y: 1000, z: 1000),
+                                               flag: EF_WORLD_FRAME)
+
+        XCTAssertResultIsSuccess(stat2)
+
+        client.stepSimulation()
+
+        let stat3 = client.getActualPositionAndOrientation(multiBody: shape,
+                                                           position: &pos,
+                                                           orientation: &ori)
+
+        XCTAssertResultIsSuccess(stat3)
+        XCTAssertEqual(pos, .zero)
+        XCTAssertNotEqual(ori, .identity)
+    }
 }

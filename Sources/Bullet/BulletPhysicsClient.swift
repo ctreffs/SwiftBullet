@@ -130,7 +130,7 @@ open class BulletPhysicsClient {
 
     /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
     @discardableResult
-    public final func applyExternalForce(bodyId: MultiBodyId, linkId: LinkId, force: Vector3, position: Vector3, flag: EnumExternalForceFlags) -> MemoryStatusHandleResult {
+    public final func applyExternalForce(bodyId: MultiBodyId, linkId: LinkId, force: Vector3, position: Vector3, flag: EnumExternalForceFlags = EF_WORLD_FRAME) -> MemoryStatusHandleResult {
         applyExternalForce(bodyUniqueId: bodyId.rawValue,
                            linkId: linkId.rawValue,
                            force: force,
@@ -140,7 +140,7 @@ open class BulletPhysicsClient {
 
     /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
     @discardableResult
-    public final func applyExternalTorque(bodyId: MultiBodyId, linkId: LinkId, torque: Vector3, flag: EnumExternalForceFlags) -> MemoryStatusHandleResult {
+    public final func applyExternalTorque(bodyId: MultiBodyId, linkId: LinkId, torque: Vector3, flag: EnumExternalForceFlags = EF_WORLD_FRAME) -> MemoryStatusHandleResult {
         applyExternalTorque(bodyUniqueId: bodyId.rawValue,
                             linkId: linkId.rawValue,
                             torque: torque,
@@ -308,7 +308,7 @@ extension BulletPhysicsClient {
                 build
                     .command(b3ApplyExternalForceCommandInit)
                     .apply { b3ApplyExternalForce($0, bodyUniqueId, linkId, forcePtr, positionPtr, flag) }
-                    .expect(.init(0))
+                    .expect(CMD_CLIENT_COMMAND_COMPLETED)
                     .submit()
             }
         }
@@ -319,7 +319,7 @@ extension BulletPhysicsClient {
             build
                 .command(b3ApplyExternalForceCommandInit)
                 .apply { b3ApplyExternalTorque($0, bodyUniqueId, linkId, torquePtr, flag) }
-                .expect(.init(0))
+                .expect(CMD_CLIENT_COMMAND_COMPLETED)
                 .submit()
         }
     }

@@ -6,10 +6,13 @@ extension BulletPhysicsClientTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__BulletPhysicsClientTests = [
+        ("testApplyExternalForce", testApplyExternalForce),
+        ("testApplyExternalTorque", testApplyExternalTorque),
         ("testCreateCollisionShapes", testCreateCollisionShapes),
         ("testCreateMultiBody", testCreateMultiBody),
         ("testGetActualPlacement", testGetActualPlacement),
         ("testRaycasting", testRaycasting),
+        ("testRemoveCollisionShape", testRemoveCollisionShape),
         ("testSetParameters", testSetParameters),
         ("testStepSimulation", testStepSimulation)
     ]
