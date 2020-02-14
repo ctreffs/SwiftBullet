@@ -34,3 +34,8 @@ public typealias MultiBodyId = UniqueId<MultiBody>
 extension MultiBodyId {
     public static let noId = MultiBodyId(rawValue: -1)
 }
+
+public typealias LinkId = UniqueId<Link>
+extension LinkId {
+    public static let noId = LinkId(rawValue: -1)
+}

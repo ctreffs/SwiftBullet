@@ -388,7 +388,7 @@ b3RaycastBatchSetParentObject
 b3GetRaycastInformation
 /// Apply external force at the body 
 b3ApplyExternalForceCommandInit
-b3ApplyExternalForce
+b3ApplyExternalForce /*3*/ /*3*/
 b3ApplyExternalTorque
 ///experiments of robots interacting with non-rigid objects 
 b3LoadSoftBodyCommandInit

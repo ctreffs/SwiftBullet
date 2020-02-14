@@ -127,6 +127,25 @@ open class BulletPhysicsClient {
                 return RayHitInfo($0)
             }
     }
+
+    /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
+    @discardableResult
+    public final func applyExternalForce(bodyId: MultiBodyId, linkId: LinkId, force: Vector3, position: Vector3, flag: EnumExternalForceFlags) -> MemoryStatusHandleResult {
+        applyExternalForce(bodyUniqueId: bodyId.rawValue,
+                           linkId: linkId.rawValue,
+                           force: force,
+                           position: position,
+                           flag: Int32(flag.rawValue))
+    }
+
+    /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
+    @discardableResult
+    public final func applyExternalTorque(bodyId: MultiBodyId, linkId: LinkId, torque: Vector3, flag: EnumExternalForceFlags) -> MemoryStatusHandleResult {
+        applyExternalTorque(bodyUniqueId: bodyId.rawValue,
+                            linkId: linkId.rawValue,
+                            torque: torque,
+                            flag: Int32(flag.rawValue))
+    }
 }
 
 // MARK: - Error
@@ -281,5 +300,27 @@ extension BulletPhysicsClient {
             return []
         }
         return [b3RayHitInfo](UnsafeBufferPointer<b3RayHitInfo>(start: raycastInfo.m_rayHits, count: numHits))
+    }
+
+    func applyExternalForce(bodyUniqueId: Int32, linkId: Int32, force: Vector3, position: Vector3, flag: Int32) -> MemoryStatusHandleResult {
+        force.unsafeScalars { forcePtr in
+            position.unsafeScalars { positionPtr in
+                build
+                    .command(b3ApplyExternalForceCommandInit)
+                    .apply { b3ApplyExternalForce($0, bodyUniqueId, linkId, forcePtr, positionPtr, flag) }
+                    .expect(.init(0))
+                    .submit()
+            }
+        }
+    }
+
+    func applyExternalTorque(bodyUniqueId: Int32, linkId: Int32, torque: Vector3, flag: Int32) -> MemoryStatusHandleResult {
+        torque.unsafeScalars { torquePtr in
+            build
+                .command(b3ApplyExternalForceCommandInit)
+                .apply { b3ApplyExternalTorque($0, bodyUniqueId, linkId, torquePtr, flag) }
+                .expect(.init(0))
+                .submit()
+        }
     }
 }
