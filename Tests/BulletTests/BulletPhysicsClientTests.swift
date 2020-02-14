@@ -53,6 +53,14 @@ final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertNotEqual(capsuleId, .noId)
     }
 
+    func testRemoveCollisionShape() {
+        let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
+        XCTAssertNotEqual(sphereId, .noId)
+
+        let result = client.removeCollisionShape(sphereId)
+        XCTAssertResultIsSuccess(result)
+    }
+
     func testCreateMultiBody() {
         let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
         let multiBodyId = client.createMultiBody(collisionShape: sphereId,
