@@ -9,6 +9,7 @@ extension BulletPhysicsClientTests {
         ("testCreateCollisionShapes", testCreateCollisionShapes),
         ("testCreateMultiBody", testCreateMultiBody),
         ("testGetActualPlacement", testGetActualPlacement),
+        ("testRaycasting", testRaycasting),
         ("testSetParameters", testSetParameters),
         ("testStepSimulation", testStepSimulation)
     ]

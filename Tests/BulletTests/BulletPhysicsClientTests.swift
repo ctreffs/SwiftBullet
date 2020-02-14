@@ -86,4 +86,37 @@ final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertEqual(pos, origPos)
         XCTAssertEqual(ori, origOri)
     }
+
+    func testRaycasting() {
+        let boxColl1 = client.createCollisionShapeBox(halfExtents: .init(repeating: 0.5))
+        let boxColl2 = client.createCollisionShapeBox(halfExtents: .init(repeating: 0.5))
+
+        let box1 = client.createMultiBody(collisionShape: boxColl1, visualShape: .noId, mass: 0, basePosition: .zero, baseOrientation: .identity)
+        let box2 = client.createMultiBody(collisionShape: boxColl2, visualShape: .noId, mass: 0, basePosition: .init(x: 0, y: 2, z: 0), baseOrientation: .identity)
+
+        XCTAssertEqual(client.numBodies, 2)
+
+        let cast1 = client.castRay(from: .init(x: 2, y: 0, z: 0),
+                                   to: .init(x: 3, y: 0, z: 0))
+
+        XCTAssertTrue(cast1.isEmpty)
+
+        let cast2 = client.castRay(from: .init(x: 2, y: 0, z: 0),
+                                   to: .init(x: -2, y: 0, z: 0))
+
+        XCTAssertEqual(cast2.count, 1)
+        XCTAssertEqual(cast2[0].objectUniqueId, box1.rawValue)
+        XCTAssertEqual(cast2[0].positionWorld.x, 0.5, accuracy: 1e-7)
+        XCTAssertEqual(cast2[0].positionWorld.y, 0)
+        XCTAssertEqual(cast2[0].positionWorld.z, 0)
+
+        let cast3 = client.castRay(from: .init(x: 0, y: 4, z: 0),
+                                   to: .init(x: 0, y: 0, z: 0))
+
+        XCTAssertEqual(cast3.count, 1)
+        XCTAssertEqual(cast3[0].objectUniqueId, box2.rawValue)
+        XCTAssertEqual(cast3[0].positionWorld.x, 0)
+        XCTAssertEqual(cast3[0].positionWorld.y, 2.5)
+        XCTAssertEqual(cast3[0].positionWorld.z, 0)
+    }
 }

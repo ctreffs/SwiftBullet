@@ -459,26 +459,6 @@ open class B3PhysicsClient {
     }
 }
 
-public struct RayHitInfo {
-    public let objectUniqueId: Int32
-    public let objectLinkIndex: Int32
-    public let fraction: Double
-    public let positionWorld: Vector3
-    public let normalWorld: Vector3
-
-    internal init(_ info: b3RayHitInfo) {
-        objectUniqueId = info.m_hitObjectUniqueId
-        objectLinkIndex = info.m_hitObjectLinkIndex
-        fraction = info.m_hitFraction
-        positionWorld = Vector3(info.m_hitPositionWorld.0,
-                                info.m_hitPositionWorld.1,
-                                info.m_hitPositionWorld.2)
-        normalWorld = Vector3(info.m_hitNormalWorld.0,
-                              info.m_hitNormalWorld.1,
-                              info.m_hitNormalWorld.2)
-    }
-}
-
 extension B3PhysicsClient {
     private func __createCommand(_ closure: () -> b3SharedMemoryCommandHandle?) throws -> b3SharedMemoryCommandHandle {
         guard let handle: b3SharedMemoryCommandHandle = closure() else {

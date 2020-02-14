@@ -85,6 +85,11 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
+    public final func removeCollisionShape(_ shapeId: CollisionShapeId) -> MemoryStatusHandleResult {
+        removeCollisionShape(shapeId.rawValue)
+    }
+
+    @discardableResult
     public final func createMultiBody(collisionShape: CollisionShapeId,
                                       visualShape: VisualShapeId,
                                       mass: Double,
@@ -105,6 +110,22 @@ open class BulletPhysicsClient {
 
     @inlinable public final var numBodies: Int {
         Int(b3GetNumBodies(clientHandle))
+    }
+
+    public final func castRay(from rayFromWorld: Vector3, to rayToWorld: Vector3) -> [RayHitInfo] {
+        let status = createRaycast(rayFromWorld: rayFromWorld, rayToWorld: rayToWorld)
+        guard case .success = status else {
+            return []
+        }
+        return getRaycastInfo()
+            .compactMap {
+                guard $0.m_hitObjectUniqueId > -1 || $0.m_hitObjectLinkIndex > -1 else {
+                    // NOTE: this fixes an issue where a strange
+                    // hit object appears when raycast does not hit anything.
+                    return nil
+                }
+                return RayHitInfo($0)
+            }
     }
 }
 
@@ -150,6 +171,13 @@ extension BulletPhysicsClient {
             .command(b3CreateCollisionShapeCommandInit)
             .injectIndexed(shapes.map { $0.closure })
             .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
+            .submit()
+    }
+
+    final func removeCollisionShape(_ collisionShapeId: Int32) -> MemoryStatusHandleResult {
+        build
+            .command { b3InitRemoveCollisionShapeCommand($0, collisionShapeId) }
+            .expect(CMD_REMOVE_BODY_COMPLETED)
             .submit()
     }
 
@@ -236,5 +264,22 @@ extension BulletPhysicsClient {
                 }
             }
         }
+    }
+
+    func createRaycast(rayFromWorld: Vector3, rayToWorld: Vector3) -> MemoryStatusHandleResult {
+        build
+            .command { b3CreateRaycastCommandInit($0, rayFromWorld.x, rayFromWorld.y, rayFromWorld.z, rayToWorld.x, rayToWorld.y, rayToWorld.z) }
+            .expect(CMD_REQUEST_RAY_CAST_INTERSECTIONS_COMPLETED)
+            .submit()
+    }
+
+    func getRaycastInfo() -> [b3RayHitInfo] {
+        var raycastInfo = b3RaycastInformation()
+        b3GetRaycastInformation(clientHandle, &raycastInfo)
+        let numHits = Int(raycastInfo.m_numRayHits)
+        guard numHits > 0 else {
+            return []
+        }
+        return [b3RayHitInfo](UnsafeBufferPointer<b3RayHitInfo>(start: raycastInfo.m_rayHits, count: numHits))
     }
 }
