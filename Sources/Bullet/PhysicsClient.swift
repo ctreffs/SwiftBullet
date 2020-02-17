@@ -7,6 +7,7 @@
 
 import CBullet
 
+@available(*, deprecated)
 public final class PhysicsClient: B3PhysicsClient {
     public func simulateStep() throws {
         let cmd = try initStepSimulationCommand()

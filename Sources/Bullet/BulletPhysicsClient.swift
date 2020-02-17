@@ -12,10 +12,7 @@ import CBullet
 open class BulletPhysicsClient {
     @usableFromInline let clientHandle: b3PhysicsClientHandle
 
-    let cmd: PCmd
-    var build: PhysicsCommandBuilder {
-        cmd.build
-    }
+    let build: PhysicsCommandBuilder
 
     internal var numDegreeOfFreedomQ: Int32 = -1
     internal lazy var actualStateQPtr = UnsafeMutablePointer<UnsafePointer<Double>?>.allocate(capacity: 7)
@@ -47,7 +44,7 @@ open class BulletPhysicsClient {
         }
 
         self.clientHandle = clientHandle
-        self.cmd = PCmd(clientHandle)
+        self.build = PhysicsCommandBuilder(clientHandle)
     }
 
     @discardableResult
@@ -73,6 +70,12 @@ open class BulletPhysicsClient {
             .command(b3InitResetSimulationCommand)
             .expect(CMD_RESET_SIMULATION_COMPLETED)
             .submit()
+    }
+
+    /// There can only be 1 outstanding command. Check if a command can be send.
+    @inlinable
+    public final var canSubmitCommand: Bool {
+        b3CanSubmitCommand(clientHandle) == 1
     }
 
     @discardableResult

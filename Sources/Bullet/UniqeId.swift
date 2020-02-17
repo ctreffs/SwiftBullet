@@ -39,3 +39,12 @@ public typealias LinkId = UniqueId<Link>
 extension LinkId {
     public static let noId = LinkId(rawValue: -1)
 }
+
+public struct Link {
+}
+
+public struct VisualShape {
+}
+
+public struct MultiBody {
+}

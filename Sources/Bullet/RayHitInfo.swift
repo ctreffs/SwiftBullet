@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  RayHitInfo.swift
 //
 //
 //  Created by Christian Treffs on 13.02.20.
