@@ -12,39 +12,27 @@ public struct UniqueId<Tag>: RawRepresentable {
         self.rawValue = rawValue
     }
 }
-
 extension UniqueId: Equatable { }
-extension UniqueId: Comparable {
-    public static func < (lhs: UniqueId, rhs: UniqueId) -> Bool {
-        lhs.rawValue < rhs.rawValue
-    }
-}
 
 public typealias CollisionShapeId = UniqueId<CollisionShape>
 extension CollisionShapeId {
     public static let noId = CollisionShapeId(rawValue: -1)
 }
 
+public struct VisualShape {}
 public typealias VisualShapeId = UniqueId<VisualShape>
 extension VisualShapeId {
     public static let noId = VisualShapeId(rawValue: -1)
 }
 
+public struct MultiBody {}
 public typealias MultiBodyId = UniqueId<MultiBody>
 extension MultiBodyId {
     public static let noId = MultiBodyId(rawValue: -1)
 }
 
+public struct Link {}
 public typealias LinkId = UniqueId<Link>
 extension LinkId {
     public static let noId = LinkId(rawValue: -1)
-}
-
-public struct Link {
-}
-
-public struct VisualShape {
-}
-
-public struct MultiBody {
 }

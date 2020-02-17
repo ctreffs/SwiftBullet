@@ -77,6 +77,12 @@ public final class BulletPhysicsClientTests: XCTestCase {
 
         let capsuleId = client.createCollisionShapeCapsule(radius: .random(in: 0.001...1000.0), height: .random(in: 0.001...1000.0))
         XCTAssertNotEqual(capsuleId, .noId)
+
+        let cylinderId = client.createCollisionShapeCylinder(radius: .random(in: 0.001...1000.0), height: .random(in: 0.001...1000.0))
+        XCTAssertNotEqual(cylinderId, .noId)
+
+        let planeId = client.createCollisionShapePlane(normal: .random(in: -1000...1000), constant: .random(in: -1000...1000))
+        XCTAssertNotEqual(planeId, .noId)
     }
 
     func testRemoveCollisionShape() {
@@ -96,6 +102,21 @@ public final class BulletPhysicsClientTests: XCTestCase {
                                                  baseOrientation: .random(in: -10...10))
         XCTAssertEqual(client.numBodies, 1)
         XCTAssertNotEqual(multiBodyId, .noId)
+    }
+
+    func testRemoveMultiBody() {
+        let sphereId = client.createCollisionShapePlane(normal: .random(in: -100...100), constant: .random(in: -100...100))
+        let multiBodyId = client.createMultiBody(collisionShape: sphereId,
+                                                 visualShape: .noId,
+                                                 mass: .random(in: -10...10),
+                                                 basePosition: .random(in: -10...10),
+                                                 baseOrientation: .random(in: -10...10))
+        XCTAssertEqual(client.numBodies, 1)
+        XCTAssertNotEqual(multiBodyId, .noId)
+
+        let status = client.removeMultiBody(bodyId: multiBodyId)
+        XCTAssertResultIsSuccess(status)
+        XCTAssertEqual(client.numBodies, 0)
     }
 
     func testGetActualPlacement() {

@@ -293,16 +293,16 @@ extension BulletPhysicsClient {
 // MARK: - internal API
 extension BulletPhysicsClient {
     final func createCollisionShape(_ position: Vector3, _ orientation: Vector4, _ shape: CollisionShape) -> MemoryStatusHandleResult {
-        position.unsafeScalars { _ in
-            orientation.unsafeScalars { _ in
+        position.unsafeScalars { positionPtr in
+            orientation.unsafeScalars { orientationPtr in
                 build
                     .command(b3CreateCollisionShapeCommandInit)
                     .injectOne(shape.closure)
-                    /*.applyWithStatus { (handle, shapeIndex) in
-                     b3CreateCollisionShapeSetChildTransform(handle, shapeIndex, positionPtr, orientationPtr)
-                     }*/
-                    .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
-                    .submit()
+                    .applyWithStatus { handle, shapeIndex in
+                        b3CreateCollisionShapeSetChildTransform(handle, shapeIndex, positionPtr, orientationPtr)
+                    }
+                .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
+                .submit()
             }
         }
     }
