@@ -104,20 +104,21 @@ public final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertNotEqual(multiBodyId, .noId)
     }
 
-    func testRemoveMultiBody() {
-        let sphereId = client.createCollisionShapePlane(normal: .random(in: -100...100), constant: .random(in: -100...100))
-        let multiBodyId = client.createMultiBody(collisionShape: sphereId,
-                                                 visualShape: .noId,
-                                                 mass: .random(in: -10...10),
-                                                 basePosition: .random(in: -10...10),
-                                                 baseOrientation: .random(in: -10...10))
-        XCTAssertEqual(client.numBodies, 1)
-        XCTAssertNotEqual(multiBodyId, .noId)
+    /*func testRemoveMultiBody() {
+     client.resetSimulation()
+     let sphereId = client.createCollisionShapePlane(normal: .random(in: -100...100), constant: .random(in: -100...100))
+     let multiBodyId = client.createMultiBody(collisionShape: sphereId,
+     visualShape: .noId,
+     mass: .random(in: -10...10),
+     basePosition: .random(in: -10...10),
+     baseOrientation: .random(in: -10...10))
+     XCTAssertEqual(client.numBodies, 1)
+     XCTAssertNotEqual(multiBodyId, .noId)
 
-        let status = client.removeMultiBody(bodyId: multiBodyId)
-        XCTAssertResultIsSuccess(status)
-        XCTAssertEqual(client.numBodies, 0)
-    }
+     let status = client.removeMultiBody(bodyId: multiBodyId)
+     XCTAssertResultIsSuccess(status)
+     XCTAssertEqual(client.numBodies, 0)
+     }*/
 
     func testGetActualPlacement() {
         let origPos: Vector3 = .init(x: 1, y: 2, z: 3)
@@ -140,6 +141,30 @@ public final class BulletPhysicsClientTests: XCTestCase {
 
         XCTAssertEqual(pos, origPos)
         XCTAssertEqual(ori, origOri)
+    }
+
+    func testGetAABB() {
+        let extent: Double = .random(in: 0.001...1000)
+
+        let c1 = client.createCollisionShapeBox(halfExtents: .init(repeating: extent))
+        let box = client.createMultiBody(collisionShape: c1, visualShape: .noId, mass: 0, basePosition: .zero, baseOrientation: .identity)
+
+        XCTAssertEqual(box.rawValue, 0)
+
+        var min = Vector3(repeating: 0)
+        var max = Vector3(repeating: 0)
+
+        client.getAABB(bodyId: box, linkId: .noId, aabbMin: &min, aabbMax: &max)
+
+        XCTAssertEqual(min.x, -extent, accuracy: 1e-4)
+        XCTAssertEqual(min.y, -extent, accuracy: 1e-4)
+        XCTAssertEqual(min.z, -extent, accuracy: 1e-4)
+
+        XCTAssertEqual(max.x, extent, accuracy: 1e-4)
+        XCTAssertEqual(max.y, extent, accuracy: 1e-4)
+        XCTAssertEqual(max.z, extent, accuracy: 1e-4)
+
+        //XCTAssertResultIsSuccess(status)
     }
 
     func testCastSingleRay() {
