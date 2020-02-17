@@ -30,12 +30,32 @@ public final class BulletPhysicsClientTests: XCTestCase {
 
     func testSetParameters() {
         let params: [PhysicsParameter] = [
+            .allowedCcdPenetration(.random(in: -1000...1000)),
+            .collisionFilterMode(.random(in: -1000...1000)),
+            .constraintSolverType(.random(in: -1000...1000)),
+            .contactBreakingThreshold(.random(in: -1000...1000)),
+            .contactSlop(.random(in: -1000...1000)),
+            .defaultContactERP(.random(in: -1000...1000)),
+            .defaultFrictionCFM(.random(in: -1000...1000)),
+            .defaultFrictionERP(.random(in: -1000...1000)),
+            .defaultGlobalCFM(.random(in: -1000...1000)),
+            .defaultNonContactERP(.random(in: -1000...1000)),
+            .deterministicOverlappingPairs(.random(in: -1000...1000)),
+            .enableConeFriction(.random(in: -1000...1000)),
+            .enableFileCaching(.random()),
+            .enableSAT(.random()),
             .gravity(.random(in: -1000...1000)),
-            .realTimeSimulation(true),
+            .jointFeedbackMode(.random(in: -1000...1000)),
+            .maxNumCommandsPer1ms(.random(in: -1000...1000)),
+            .minimumSolverIslandSize(.random(in: -1000...1000)),
+            .numSolverIterations(.random(in: -1000...1000)),
+            .numSubSteps(.random(in: -1000...1000)),
+            .realTimeSimulation(.random()),
+            .restitutionVelocityThreshold(.random(in: -1000...1000)),
+            .solverResidualThreshold(.random(in: -1000...1000)),
+            .splitImpulsePenetrationThreshold(.random(in: -1000...1000)),
             .timeStep(.random(in: -1000...1000)),
-            .numSubSteps(.random(in: 0...1000)),
-            .maxNumCommandsPer1ms(.random(in: 1...1000)),
-            .numSolverIterations(.random(in: 1...1000))
+            .useSplitImpulse(.random())
         ]
         let result = client.setPhysicsParameters(params)
         XCTAssertResultIsSuccess(result)
