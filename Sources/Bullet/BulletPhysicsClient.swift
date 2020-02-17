@@ -177,6 +177,15 @@ open class BulletPhysicsClient {
                              aabbMin: &aabbMin,
                              aabbMax: &aabbMax)
     }
+
+    @discardableResult
+    public final func setDynamics(bodyId: MultiBodyId, linkId: LinkId, dynamics: [ChangeDynamicsInfo]) -> MemoryStatusHandleResult {
+        setDynamicsInfo(bodyUniqueId: bodyId.rawValue, linkIndex: linkId.rawValue, changes: dynamics)
+    }
+
+    public final func getDynamics(bodyId: MultiBodyId, linkId: LinkId) -> DynamicsInfo? {
+        getDynamicsInfo(bodyUniqueId: bodyId.rawValue, linkIndex: linkId.rawValue)
+    }
 }
 
 // MARK: - Error
@@ -421,18 +430,31 @@ extension BulletPhysicsClient {
         }
     }
 
-    func createDynamicsInfo(bodyUniqueId: Int32, linkIndex: Int32) -> MemoryStatusHandleResult {
+    func setDynamicsInfo(bodyUniqueId: Int32, linkIndex: Int32, changes: [ChangeDynamicsInfo]) -> MemoryStatusHandleResult {
         build
             .command { b3GetDynamicsInfoCommandInit($0, bodyUniqueId, linkIndex) }
+            .injectWith(bodyIndex: bodyUniqueId, linkIndex: linkIndex, changes.map { $0.closure })
             .expect(CMD_GET_DYNAMICS_INFO_COMPLETED)
             .submit()
     }
 
-    func getDynamicsInfo(status: MemoryStatusHandleResult) -> MemoryStatusHandleResult {
+    func getDynamicsInfo(bodyUniqueId: Int32, linkIndex: Int32) -> DynamicsInfo? {
+        let status = build
+            .command { b3GetDynamicsInfoCommandInit($0, bodyUniqueId, linkIndex) }
+            .expect(CMD_GET_DYNAMICS_INFO_COMPLETED)
+            .submit()
+        guard case .success = status else {
+            return nil
+        }
+
         var info = b3DynamicsInfo()
-        return status
+        let result = status
             .command { b3GetDynamicsInfo($0, &info) }
-        // FIXME: this is not right
+
+        guard case .success = result else {
+            return nil
+        }
+        return DynamicsInfo(info)
     }
 
     func getStatusAABB(bodyUniqueId: MemoryStatusHandleResult, linkUniqueId: Int32, aabbMin: inout Vector3, aabbMax: inout Vector3) -> MemoryStatusHandleResult {
