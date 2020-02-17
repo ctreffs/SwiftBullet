@@ -13,22 +13,14 @@ extension SIMD4 where Scalar == Double {
 }
 
 extension SIMD3: Sequence {
-    public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
+    @inlinable public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
         [x, y, z].makeIterator()
-    }
-
-    public var array: [Scalar] {
-        [Scalar](self)
     }
 }
 
 extension SIMD4: Sequence {
-    public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
+    @inlinable public __consuming func makeIterator() -> IndexingIterator<[Scalar]> {
         [x, y, z, w].makeIterator()
-    }
-
-    public var array: [Scalar] {
-        [Scalar](self)
     }
 }
 

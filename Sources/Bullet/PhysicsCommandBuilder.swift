@@ -11,6 +11,7 @@ public typealias MemoryCommandHandleResult = Result<b3SharedMemoryCommandHandle,
 public typealias MemoryStatusHandleResult = Result<b3SharedMemoryStatusHandle, Swift.Error>
 public typealias SettableClosure = (PhysicsCommandBuilder.Settable) -> PhysicsCommandBuilder.Settable
 public typealias SettableIndexedClosure = (PhysicsCommandBuilder.Settable, Int) -> PhysicsCommandBuilder.Settable
+public typealias SettableBodyIndexClosure = (PhysicsCommandBuilder.Settable, _ bodyId: Int32, _ linkId: Int32) -> PhysicsCommandBuilder.Settable
 
 public struct PhysicsCommandBuilder {
     enum Error: Swift.Error {
@@ -69,6 +70,12 @@ public struct PhysicsCommandBuilder {
         func inject(_ closures: [SettableClosure]) -> Settable {
             closures.reduce(self) { prev, next in
                 next(prev)
+            }
+        }
+
+        func injectWith(bodyIndex: Int32, linkIndex: Int32, _ closures: [SettableBodyIndexClosure]) -> Settable {
+            closures.reduce(self) { prev, next in
+                next(prev, bodyIndex, linkIndex)
             }
         }
 
