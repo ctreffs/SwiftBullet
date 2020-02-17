@@ -64,6 +64,7 @@ open class BulletPhysicsClient {
             .submit()
     }
 
+    /// Reset the simulation: remove all objects and start from an empty world.
     @discardableResult
     public final func resetSimulation() -> MemoryStatusHandleResult {
         build
@@ -114,6 +115,14 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
+    public final func removeMultiBody(bodyId: MultiBodyId) -> MemoryStatusHandleResult {
+        build
+            .command { b3InitRemoveBodyCommand($0, bodyId.rawValue) }
+            .expect(CMD_REMOVE_BODY_COMPLETED)
+            .submit()
+    }
+
+    @discardableResult
     public final func getActualPositionAndOrientation(multiBody: MultiBodyId, position: inout Vector3, orientation: inout Vector4) -> MemoryStatusHandleResult {
         var bodyId = multiBody.rawValue
         let status = requestActualStateCommand(bodyUniqueId: bodyId)
@@ -157,6 +166,16 @@ open class BulletPhysicsClient {
                             linkId: linkId.rawValue,
                             torque: torque,
                             flag: Int32(flag.rawValue))
+    }
+
+    @discardableResult
+    public final func getAABB(bodyId: MultiBodyId, linkId: LinkId, aabbMin: inout Vector3, aabbMax: inout Vector3) -> MemoryStatusHandleResult {
+        let status = requestCollisionInfo(bodyUniqueId: bodyId.rawValue)
+
+        return getStatusAABB(bodyUniqueId: status,
+                             linkUniqueId: linkId.rawValue,
+                             aabbMin: &aabbMin,
+                             aabbMax: &aabbMax)
     }
 }
 
@@ -413,5 +432,15 @@ extension BulletPhysicsClient {
         var info = b3DynamicsInfo()
         return status
             .command { b3GetDynamicsInfo($0, &info) }
+        // FIXME: this is not right
+    }
+
+    func getStatusAABB(bodyUniqueId: MemoryStatusHandleResult, linkUniqueId: Int32, aabbMin: inout Vector3, aabbMax: inout Vector3) -> MemoryStatusHandleResult {
+        aabbMin.unsafeMutableScalars { minPtr in
+            aabbMax.unsafeMutableScalars { maxPtr in
+                bodyUniqueId
+                    .command { b3GetStatusAABB($0, linkUniqueId, minPtr, maxPtr) }
+            }
+        }
     }
 }
