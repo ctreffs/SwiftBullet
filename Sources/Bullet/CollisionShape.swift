@@ -83,8 +83,37 @@ extension CollisionShape {
         }
     }
 
-    // TODO: more collision shapes
-    // mesh:        position: Vector3, orientation: Vector4, fileName: String, scale: Vector3
-    // convexMesh:  position: Vector3, orientation: Vector4, fileName: String, scale: Vector3
-    // concaveMesh: position: Vector3, orientation: Vector4, fileName: String, scale: Vector3
+    public static func mesh(position: Vector3, orientation: Vector4, fileName: String, scale: Vector3) -> CollisionShape {
+        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
+            position.unsafeScalars { positionPtr in
+                orientation.unsafeScalars { orientationPtr in
+                    scale.unsafeScalars { scalePtr in
+                        build
+                            .set { b3CreateCollisionShapeAddMesh($0, fileName, scalePtr) }
+                            .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
+                    }
+                }
+            }
+        }
+    }
+
+    public static func convexMesh(position: Vector3, orientation: Vector4, meshScale: Vector3, vertices: [Vector3]) -> CollisionShape {
+        let numVertices = Int32(vertices.count)
+        let flatVertices = vertices.flatMap { $0 }
+        return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
+            let startVerticesPtr = flatVerticesBufferPtr.baseAddress!
+            return meshScale.unsafeScalars { meshScalePtr in
+                CollisionShape { build, _ in
+                    build
+                        .set {
+                            b3CreateCollisionShapeAddConvexMesh($0, meshScalePtr, startVerticesPtr, numVertices)
+                        }
+                }
+            }
+        }
+    }
+
+    public static func concaveMesh(position: Vector3, orientation: Vector4, fileName: String, scale: Vector3) -> CollisionShape {
+        fatalError()
+    }
 }

@@ -30,7 +30,6 @@ public struct PhysicsCommandBuilder {
 
     func command(_ closure: (b3PhysicsClientHandle) -> b3SharedMemoryCommandHandle?) -> Settable {
         guard let handle: b3SharedMemoryCommandHandle = closure(client) else {
-            // TODO: fail with function parameters
             return Settable(client, .failure(Error.sharedMemoryHandleNil))
         }
         return Settable(client, .success(handle))
