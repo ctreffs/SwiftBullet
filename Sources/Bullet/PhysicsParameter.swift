@@ -46,25 +46,83 @@ extension PhysicsParameter {
         .init { $0.set { b3PhysicsParamSetMaxNumCommandsPer1ms($0, Int32(maxNumCmdPer1ms)) } }
     }
 
-    // TODO: more parameters
-    // b3PhysicsParameterSetAllowedCcdPenetration(_ commandHandle: b3SharedMemoryCommandHandle!, _ allowedCcdPenetration: Double) -> Int32
-    // b3PhysicsParameterSetConstraintSolverType(_ commandHandle: b3SharedMemoryCommandHandle!, _ constraintSolverType: Int32) -> Int32
-    // b3PhysicsParameterSetDeterministicOverlappingPairs(_ commandHandle: b3SharedMemoryCommandHandle!, _ deterministicOverlappingPairs: Int32) -> Int32
-    // b3PhysicsParameterSetEnableSAT(_ commandHandle: b3SharedMemoryCommandHandle!, _ enableSAT: Int32) -> Int32
-    // b3PhysicsParameterSetJointFeedbackMode(_ commandHandle: b3SharedMemoryCommandHandle!, _ jointFeedbackMode: Int32) -> Int32
-    // b3PhysicsParameterSetMinimumSolverIslandSize(_ commandHandle: b3SharedMemoryCommandHandle!, _ minimumSolverIslandSize: Int32) -> Int32
-    // b3PhysicsParamSetCollisionFilterMode(_ commandHandle: b3SharedMemoryCommandHandle!, _ filterMode: Int32) -> Int32
-    // b3PhysicsParamSetContactBreakingThreshold(_ commandHandle: b3SharedMemoryCommandHandle!, _ contactBreakingThreshold: Double) -> Int32
-    // b3PhysicsParamSetContactSlop(_ commandHandle: b3SharedMemoryCommandHandle!, _ contactSlop: Double) -> Int32
-    // b3PhysicsParamSetDefaultContactERP(_ commandHandle: b3SharedMemoryCommandHandle!, _ defaultContactERP: Double) -> Int32
-    // b3PhysicsParamSetDefaultFrictionCFM(_ commandHandle: b3SharedMemoryCommandHandle!, _ frictionCFM: Double) -> Int32
-    // b3PhysicsParamSetDefaultFrictionERP(_ commandHandle: b3SharedMemoryCommandHandle!, _ frictionERP: Double) -> Int32
-    // b3PhysicsParamSetDefaultGlobalCFM(_ commandHandle: b3SharedMemoryCommandHandle!, _ defaultGlobalCFM: Double) -> Int32
-    // b3PhysicsParamSetDefaultNonContactERP(_ commandHandle: b3SharedMemoryCommandHandle!, _ defaultNonContactERP: Double) -> Int32
-    // b3PhysicsParamSetEnableConeFriction(_ commandHandle: b3SharedMemoryCommandHandle!, _ enableConeFriction: Int32) -> Int32
-    // b3PhysicsParamSetEnableFileCaching(_ commandHandle: b3SharedMemoryCommandHandle!, _ enableFileCaching: Int32) -> Int32
-    // b3PhysicsParamSetRestitutionVelocityThreshold(_ commandHandle: b3SharedMemoryCommandHandle!, _ restitutionVelocityThreshold: Double) -> Int32
-    // b3PhysicsParamSetSolverResidualThreshold(_ commandHandle: b3SharedMemoryCommandHandle!, _ solverResidualThreshold: Double) -> Int32
-    // b3PhysicsParamSetSplitImpulsePenetrationThreshold(_ commandHandle: b3SharedMemoryCommandHandle!, _ splitImpulsePenetrationThreshold: Double) -> Int32
-    // b3PhysicsParamSetUseSplitImpulse(_ commandHandle: b3SharedMemoryCommandHandle!, _ useSplitImpulse: Int32) -> Int32
+    public static func allowedCcdPenetration(_ allowedCcdPenetration: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetAllowedCcdPenetration($0, allowedCcdPenetration) } }
+    }
+
+    public static func constraintSolverType(_ constraintSolverType: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetConstraintSolverType($0, constraintSolverType) } }
+    }
+
+    public static func deterministicOverlappingPairs(_ deterministicOverlappingPairs: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetDeterministicOverlappingPairs($0, deterministicOverlappingPairs) } }
+    }
+
+    public static func enableSAT(_ enableSAT: Bool) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetEnableSAT($0, enableSAT ? 1 : 0) } }
+    }
+
+    public static func jointFeedbackMode(_ jointFeedbackMode: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetJointFeedbackMode($0, jointFeedbackMode) } }
+    }
+
+    public static func minimumSolverIslandSize( _ minimumSolverIslandSize: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParameterSetMinimumSolverIslandSize($0, minimumSolverIslandSize) } }
+    }
+
+    public static func collisionFilterMode(_ filterMode: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetCollisionFilterMode($0, filterMode) } }
+    }
+
+    public static func contactBreakingThreshold(_ contactBreakingThreshold: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetContactBreakingThreshold($0, contactBreakingThreshold) } }
+    }
+
+    public static func contactSlop(_ contactSlop: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetContactSlop($0, contactSlop) } }
+    }
+
+    public static func defaultContactERP(_ defaultContactERP: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetDefaultContactERP($0, defaultContactERP) } }
+    }
+
+    public static func defaultFrictionCFM(_ frictionCFM: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetDefaultFrictionCFM($0, frictionCFM) } }
+    }
+
+    public static func defaultFrictionERP(_ frictionERP: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetDefaultFrictionERP($0, frictionERP) } }
+    }
+
+    public static func defaultGlobalCFM(_ defaultGlobalCFM: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetDefaultGlobalCFM($0, defaultGlobalCFM) } }
+    }
+
+    public static func defaultNonContactERP(_ defaultNonContactERP: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetDefaultNonContactERP($0, defaultNonContactERP) } }
+    }
+
+    public static func enableConeFriction(_ enableConeFriction: Int32) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetEnableConeFriction($0, enableConeFriction) } }
+    }
+
+    public static func enableFileCaching(_ enableFileCaching: Bool) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetEnableFileCaching($0, enableFileCaching ? 1 : 0) } }
+    }
+
+    public static func restitutionVelocityThreshold(_ restitutionVelocityThreshold: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetRestitutionVelocityThreshold($0, restitutionVelocityThreshold) } }
+    }
+
+    public static func solverResidualThreshold(_ solverResidualThreshold: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetSolverResidualThreshold($0, solverResidualThreshold) } }
+    }
+
+    public static func splitImpulsePenetrationThreshold(_ splitImpulsePenetrationThreshold: Double) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetSplitImpulsePenetrationThreshold($0, splitImpulsePenetrationThreshold) } }
+    }
+
+    public static func useSplitImpulse(_ useSplitImpulse: Bool) -> PhysicsParameter {
+        .init { $0.set { b3PhysicsParamSetUseSplitImpulse($0, useSplitImpulse ? 1 : 0) } }
+    }
 }
