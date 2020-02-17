@@ -9,10 +9,11 @@ import Bullet
 import CBullet
 import XCTest
 
-final class BulletPhysicsClientTests: XCTestCase {
+public final class BulletPhysicsClientTests: XCTestCase {
+    // swiftlint:disable:next implicitly_unwrapped_optional
     var client: BulletPhysicsClient!
 
-    override func setUp() {
+    override public func setUp() {
         super.setUp()
         do {
             client = try BulletPhysicsClient(.direct)
@@ -21,7 +22,8 @@ final class BulletPhysicsClientTests: XCTestCase {
             fatalError(error.localizedDescription)
         }
     }
-    override func tearDown() {
+
+    override public func tearDown() {
         super.tearDown()
         client = nil
     }

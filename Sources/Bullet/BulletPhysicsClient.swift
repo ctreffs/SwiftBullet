@@ -74,25 +74,24 @@ open class BulletPhysicsClient {
     }
 
     /// There can only be 1 outstanding command. Check if a command can be send.
-    @inlinable
-    public final var canSubmitCommand: Bool {
+    @inlinable public final var canSubmitCommand: Bool {
         b3CanSubmitCommand(clientHandle) == 1
     }
 
     @discardableResult
-    public final func createCollisionShapeBox(position: Vector3 = .zero, orienation: Vector4 = .identity, halfExtents: Vector3) -> CollisionShapeId {
+    public final func createCollisionShapeBox(halfExtents: Vector3, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
         let status = createCollisionShape(.box(position: position, orientation: orienation, halfExtents: halfExtents))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
-    public final func createCollisionShapeSphere(position: Vector3 = .zero, orienation: Vector4 = .identity, radius: Double) -> CollisionShapeId {
+    public final func createCollisionShapeSphere(radius: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
         let status = createCollisionShape(.sphere(position: position, orientation: orienation, radius: radius))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
-    public final func createCollisionShapeCapsule(position: Vector3 = .zero, orienation: Vector4 = .identity, radius: Double, height: Double) -> CollisionShapeId {
+    public final func createCollisionShapeCapsule(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
         let status = createCollisionShape(.capsule(position: position, orientation: orienation, radius: radius, height: height))
         return getCollisionShapeUniqueId(status)
     }
@@ -110,7 +109,13 @@ open class BulletPhysicsClient {
                                       baseOrientation: Vector4,
                                       baseInertialFramePosition: Vector3 = .zero,
                                       baseInertialFrameOrientation: Vector4 = .identity) -> MultiBodyId {
-        let status = makeMultiBody(collisionShape: collisionShape, visualShape: visualShape, mass: mass, basePosition: basePosition, baseOrientation: baseOrientation, baseInertialFramePosition: baseInertialFramePosition, baseInertialFrameOrientation: baseInertialFrameOrientation)
+        let status = makeMultiBody(collisionShape: collisionShape,
+                                   visualShape: visualShape,
+                                   mass: mass,
+                                   basePosition: basePosition,
+                                   baseOrientation: baseOrientation,
+                                   baseInertialFramePosition: baseInertialFramePosition,
+                                   baseInertialFrameOrientation: baseInertialFrameOrientation)
         return getMultiBodyUniqueId(status)
     }
 
@@ -310,7 +315,9 @@ extension BulletPhysicsClient {
                                                     nil)
 
                 precondition(numDegreeOfFreedomQ == 7)
-                let actualStateQ = actualStateQPtr.pointee!
+                guard let actualStateQ = actualStateQPtr.pointee else {
+                    return -1
+                }
 
                 // position
                 position[0] = actualStateQ[0]
