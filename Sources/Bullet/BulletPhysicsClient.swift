@@ -493,7 +493,7 @@ extension BulletPhysicsClient {
 
         var info = b3DynamicsInfo()
         let result = status
-            .command { b3GetDynamicsInfo($0, &info) }
+            .command(expectedStatus: 1) { b3GetDynamicsInfo($0, &info) }
 
         guard case .success = result else {
             return nil
@@ -505,7 +505,7 @@ extension BulletPhysicsClient {
         aabbMin.unsafeMutableScalars { minPtr in
             aabbMax.unsafeMutableScalars { maxPtr in
                 bodyUniqueId
-                    .command { b3GetStatusAABB($0, linkUniqueId, minPtr, maxPtr) }
+                    .command(expectedStatus: 1) { b3GetStatusAABB($0, linkUniqueId, minPtr, maxPtr) }
             }
         }
     }

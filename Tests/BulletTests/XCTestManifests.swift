@@ -14,6 +14,7 @@ extension BulletPhysicsClientTests {
         ("testCreateMultiBody", testCreateMultiBody),
         ("testGetAABB", testGetAABB),
         ("testGetActualPlacement", testGetActualPlacement),
+        ("testGetDynamics", testGetDynamics),
         ("testRemoveCollisionShape", testRemoveCollisionShape),
         ("testSetParameters", testSetParameters),
         ("testStepSimulation", testStepSimulation)

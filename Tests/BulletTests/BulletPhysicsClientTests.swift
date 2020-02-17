@@ -154,7 +154,7 @@ public final class BulletPhysicsClientTests: XCTestCase {
         var min = Vector3(repeating: 0)
         var max = Vector3(repeating: 0)
 
-        client.getAABB(bodyId: box, linkId: .noId, aabbMin: &min, aabbMax: &max)
+        let status = client.getAABB(bodyId: box, linkId: .noId, aabbMin: &min, aabbMax: &max)
 
         XCTAssertEqual(min.x, -extent, accuracy: 1e-4)
         XCTAssertEqual(min.y, -extent, accuracy: 1e-4)
@@ -164,7 +164,7 @@ public final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertEqual(max.y, extent, accuracy: 1e-4)
         XCTAssertEqual(max.z, extent, accuracy: 1e-4)
 
-        //XCTAssertResultIsSuccess(status)
+        XCTAssertResultIsSuccess(status)
     }
 
     func testCastSingleRay() {
@@ -301,5 +301,24 @@ public final class BulletPhysicsClientTests: XCTestCase {
         XCTAssertResultIsSuccess(stat3)
         XCTAssertEqual(pos, .zero)
         XCTAssertNotEqual(ori, .identity)
+    }
+
+    func testGetDynamics() {
+        let mass: Double = .random(in: -10...10)
+
+        let sphereId = client.createCollisionShapeSphere(radius: .random(in: 0.001...1000.0))
+        let multiBodyId = client.createMultiBody(collisionShape: sphereId,
+                                                 visualShape: .noId,
+                                                 mass: mass,
+                                                 basePosition: .random(in: -10...10),
+                                                 baseOrientation: .random(in: -10...10))
+        XCTAssertEqual(client.numBodies, 1)
+        XCTAssertNotEqual(multiBodyId, .noId)
+
+        let dynamics = client.getDynamics(bodyId: multiBodyId, linkId: .noId)
+
+        XCTAssertNotNil(dynamics)
+
+        XCTAssertEqual(dynamics!.mass, mass, accuracy: 1e-6)
     }
 }
