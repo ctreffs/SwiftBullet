@@ -97,6 +97,18 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
+    public final func createCollisionShapeCylinder(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
+        let status = createCollisionShape(.cylinder(position: position, orientation: orienation, radius: radius, height: height))
+        return getCollisionShapeUniqueId(status)
+    }
+
+    @discardableResult
+    public final func createCollisionShapePlane(normal: Vector3, constant: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
+        let status = createCollisionShape(.plane(position: position, orientation: orienation, normal: normal, constant: constant))
+        return getCollisionShapeUniqueId(status)
+    }
+
+    @discardableResult
     public final func removeCollisionShape(_ shapeId: CollisionShapeId) -> MemoryStatusHandleResult {
         removeCollisionShape(shapeId.rawValue)
     }
