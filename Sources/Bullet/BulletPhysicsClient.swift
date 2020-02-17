@@ -313,8 +313,8 @@ extension BulletPhysicsClient {
 
     func getActualPlacement(_ statusHandle: MemoryStatusHandleResult,
                             _ bodyUniqueId: inout Int32,
-                            _ position: inout SIMD3<Double>,
-                            _ orientation: inout SIMD4<Double>) -> MemoryStatusHandleResult {
+                            _ position: inout Vector3,
+                            _ orientation: inout Vector4) -> MemoryStatusHandleResult {
         statusHandle
             .command(expectedStatus: 1) { handle in
                 let status = b3GetStatusActualState(handle,
