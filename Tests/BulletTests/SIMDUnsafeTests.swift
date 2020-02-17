@@ -77,4 +77,31 @@ public final class SIMDUnsafeTests: XCTestCase {
         XCTAssertEqual(vec4.z, 7)
         XCTAssertEqual(vec4.w, 8)
     }
+
+    func testSIMDArrayPointer() {
+        XCTAssertEqual(MemoryLayout<Double>.stride, 8)
+        XCTAssertEqual(MemoryLayout<Double>.size, 8)
+        XCTAssertEqual(MemoryLayout<Double>.alignment, 8)
+
+        XCTAssertEqual(MemoryLayout<SIMD3<Double>>.stride, 32) // 4*Double
+        XCTAssertEqual(MemoryLayout<SIMD3<Double>>.size, 32) // 4*Double
+        XCTAssertEqual(MemoryLayout<SIMD3<Double>>.alignment, 16) // 2*Double
+
+        /*let array: ContiguousArray<SIMD3<Double>> = [.init(1, 2, 3, 4), .init(5, 6, 7, 8), .init(9, 10, 11, 12)]
+
+         array.unsafeVectorElementPointer { ptr in
+         XCTAssertEqual(ptr[0], 1)
+         XCTAssertEqual(ptr[1], 2)
+         XCTAssertEqual(ptr[2], 3)
+         XCTAssertEqual(ptr[3], 4)
+
+         XCTAssertEqual(ptr[4], 4)
+         XCTAssertEqual(ptr[5], 5)
+         XCTAssertEqual(ptr[6], 6)
+
+         XCTAssertEqual(ptr[7], 7)
+         XCTAssertEqual(ptr[8], 8)
+         XCTAssertEqual(ptr[9], 9)
+         }*/
+    }
 }

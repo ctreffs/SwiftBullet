@@ -8,6 +8,7 @@
 import CBullet
 
 // https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsClientExample.cpp
+// https://github.com/goretkin/Bullet.jl/blob/master/src/wrap.jl
 open class BulletPhysicsClient {
     @usableFromInline let clientHandle: b3PhysicsClientHandle
 
@@ -67,6 +68,14 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
+    public final func resetSimulation() -> MemoryStatusHandleResult {
+        build
+            .command(b3InitResetSimulationCommand)
+            .expect(CMD_RESET_SIMULATION_COMPLETED)
+            .submit()
+    }
+
+    @discardableResult
     public final func createCollisionShapeBox(position: Vector3 = .zero, orienation: Vector4 = .identity, halfExtents: Vector3) -> CollisionShapeId {
         let status = createCollisionShape(.box(position: position, orientation: orienation, halfExtents: halfExtents))
         return getCollisionShapeUniqueId(status)
@@ -118,14 +127,14 @@ open class BulletPhysicsClient {
             return []
         }
         return getRaycastInfo()
-            .compactMap {
-                guard $0.m_hitObjectUniqueId > -1 || $0.m_hitObjectLinkIndex > -1 else {
-                    // NOTE: this fixes an issue where a strange
-                    // hit object appears when raycast does not hit anything.
-                    return nil
-                }
-                return RayHitInfo($0)
-            }
+    }
+
+    public final func castRays(from rayFromWorld: [Vector3], to rayToWorld: [Vector3], threads numOfThreads: Threads) -> [RayHitInfo] {
+        let status = createRaycastBatch(from: rayFromWorld, to: rayToWorld, numThreads: numOfThreads.rawValue)
+        guard case .success = status else {
+            return []
+        }
+        return getRaycastInfo()
     }
 
     /// Apply external force at the body (or link) center of mass, in world space/Cartesian coordinates.
@@ -292,7 +301,7 @@ extension BulletPhysicsClient {
             .submit()
     }
 
-    func getRaycastInfo() -> [b3RayHitInfo] {
+    func getRaycastInfo() -> [RayHitInfo] {
         var raycastInfo = b3RaycastInformation()
         b3GetRaycastInformation(clientHandle, &raycastInfo)
         let numHits = Int(raycastInfo.m_numRayHits)
@@ -300,6 +309,40 @@ extension BulletPhysicsClient {
             return []
         }
         return [b3RayHitInfo](UnsafeBufferPointer<b3RayHitInfo>(start: raycastInfo.m_rayHits, count: numHits))
+            .compactMap {
+                guard $0.m_hitObjectUniqueId > -1 || $0.m_hitObjectLinkIndex > -1 else {
+                    // NOTE: this fixes an issue where a strange
+                    // hit object appears when raycast does not hit anything.
+                    return nil
+                }
+                return RayHitInfo($0)
+            }
+    }
+
+    /// <#Description#>
+    /// - Parameters:
+    ///   - raysFromWorld: <#raysFromWorld description#>
+    ///   - raysToWorld: <#raysToWorld description#>
+    ///   - numThreads: Sets the number of threads to use to compute the ray intersections for the batch.
+    ///   Specify 0 to let Bullet decide, 1 (default) for single core execution, 2 or more to select the number of threads to use.
+    func createRaycastBatch(from raysFromWorld: [Vector3], to raysToWorld: [Vector3], numThreads: Int32) -> MemoryStatusHandleResult {
+        precondition(raysFromWorld.count == raysToWorld.count)
+
+        let numRays = Int32(raysFromWorld.count)
+
+        // SIMD3 values are stored in a SIMD4Storage,
+        // so you can not directly map their memory, hence the flapMap here
+        var raysFromWorldValues: [Double] = raysFromWorld.flatMap { $0 }
+        var raysToWorldValues: [Double]   = raysToWorld.flatMap { $0 }
+
+        return build
+            .command(b3CreateRaycastBatchCommandInit)
+            .apply { b3RaycastBatchSetNumThreads($0, numThreads) }
+            .apply { b3RaycastBatchAddRays(clientHandle, $0, &raysFromWorldValues, &raysToWorldValues, numRays) }
+            .expect(CMD_REQUEST_RAY_CAST_INTERSECTIONS_COMPLETED)
+            .submit()
+
+        // b3RaycastBatchSetParentObject(<#T##commandHandle: b3SharedMemoryCommandHandle!##b3SharedMemoryCommandHandle!#>, <#T##parentObjectUniqueId: Int32##Int32#>, <#T##parentLinkIndex: Int32##Int32#>)
     }
 
     func applyExternalForce(bodyUniqueId: Int32, linkId: Int32, force: Vector3, position: Vector3, flag: Int32) -> MemoryStatusHandleResult {
@@ -322,5 +365,18 @@ extension BulletPhysicsClient {
                 .expect(CMD_CLIENT_COMMAND_COMPLETED)
                 .submit()
         }
+    }
+
+    func createDynamicsInfo(bodyUniqueId: Int32, linkIndex: Int32) -> MemoryStatusHandleResult {
+        build
+            .command { b3GetDynamicsInfoCommandInit($0, bodyUniqueId, linkIndex) }
+            .expect(CMD_GET_DYNAMICS_INFO_COMPLETED)
+            .submit()
+    }
+
+    func getDynamicsInfo(status: MemoryStatusHandleResult) -> MemoryStatusHandleResult {
+        var info = b3DynamicsInfo()
+        return status
+            .command { b3GetDynamicsInfo($0, &info) }
     }
 }

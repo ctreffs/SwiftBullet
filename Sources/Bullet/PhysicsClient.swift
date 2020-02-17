@@ -246,7 +246,7 @@ public final class PhysicsClient: B3PhysicsClient {
                              numThreads: Threads = .auto) throws -> [RayHitInfo] {
         let cmd = try createRaycastBatchCommand()
 
-        raycastBatchSetNumThreads(cmd, numThreads: numThreads)
+        raycastBatchSetNumThreads(cmd, numThreads: numThreads.rawValue)
 
         try raycastBatchAddRays(cmd, from: raysFromWorld, to: raysToWorld)
 
@@ -299,16 +299,6 @@ public final class PhysicsClient: B3PhysicsClient {
             throw Error.commandFailedWithStatus(status.1)
         }
     }
-}
-
-public typealias Threads = Int32
-
-extension Threads {
-    /// "Specify 0 to let Bullet decide,
-    /// 1 (default) for single core execution,
-    /// 2 or more to select the number of threads to use."},
-    public static let auto: Int32 = 0
-    public static let `default`: Int32 = 1
 }
 
 extension PhysicsClient {
