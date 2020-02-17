@@ -30,18 +30,20 @@ public struct PhysicsCommandBuilder {
 
     func command(_ closure: (b3PhysicsClientHandle) -> b3SharedMemoryCommandHandle?) -> Settable {
         guard let handle: b3SharedMemoryCommandHandle = closure(client) else {
-            return Settable(client, .failure(Error.sharedMemoryHandleNil))
+            return Settable(client, .failure(Error.sharedMemoryHandleNil), -1)
         }
-        return Settable(client, .success(handle))
+        return Settable(client, .success(handle), 0)
     }
 
     public struct Settable {
         let client: b3PhysicsClientHandle
         let cmd: MemoryCommandHandleResult
+        let status: Int32
 
-        init(_ client: b3PhysicsClientHandle, _ previousCommand: MemoryCommandHandleResult) {
+        init(_ client: b3PhysicsClientHandle, _ previousCommand: MemoryCommandHandleResult, _ previousStatus: Int32) {
             self.client = client
             self.cmd = previousCommand
+            self.status = previousStatus
         }
 
         func set(_ function: String = #function, _ line: Int = #line, _ closure: (b3SharedMemoryCommandHandle) -> Int32) -> Settable {
@@ -49,16 +51,14 @@ public struct PhysicsCommandBuilder {
             case let .success(handle):
                 let status = closure(handle)
 
-                switch status {
-                case 0:
-                    return Settable(client, .success(handle))
-
-                default:
-                    return Settable(client, .failure(Error.commandFailedWithStatusCode(status, function, line)))
+                if status >= 0 {
+                    return Settable(client, .success(handle), status)
+                } else {
+                    return Settable(client, .failure(Error.commandFailedWithStatusCode(status, function, line)), status)
                 }
 
             case let .failure(error):
-                return Settable(client, .failure(error))
+                return Settable(client, .failure(error), status)
             }
         }
 
@@ -88,10 +88,21 @@ public struct PhysicsCommandBuilder {
             switch cmd {
             case let .success(handle):
                 closure(handle)
-                return Settable(client, .success(handle))
+                return Settable(client, .success(handle), status)
 
             case let .failure(error):
-                return Settable(client, .failure(error))
+                return Settable(client, .failure(error), status)
+            }
+        }
+
+        func applyWithStatus(_ function: String = #function, _ line: Int = #line, _ closure: (b3SharedMemoryCommandHandle, Int32) -> Void) -> Settable {
+            switch cmd {
+            case let .success(handle):
+                closure(handle, status)
+                return Settable(client, .success(handle), status)
+
+            case let .failure(error):
+                return Settable(client, .failure(error), status)
             }
         }
 

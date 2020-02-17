@@ -80,31 +80,49 @@ open class BulletPhysicsClient {
 
     @discardableResult
     public final func createCollisionShapeBox(halfExtents: Vector3, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(.box(position: position, orientation: orienation, halfExtents: halfExtents))
+        let status = createCollisionShape(position, orienation, .box(halfExtents))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
     public final func createCollisionShapeSphere(radius: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(.sphere(position: position, orientation: orienation, radius: radius))
+        let status = createCollisionShape(position, orienation, .sphere(radius))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
     public final func createCollisionShapeCapsule(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(.capsule(position: position, orientation: orienation, radius: radius, height: height))
+        let status = createCollisionShape(position, orienation, .capsule(radius, height))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
     public final func createCollisionShapeCylinder(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(.cylinder(position: position, orientation: orienation, radius: radius, height: height))
+        let status = createCollisionShape(position, orienation, .cylinder(radius, height))
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
     public final func createCollisionShapePlane(normal: Vector3, constant: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(.plane(position: position, orientation: orienation, normal: normal, constant: constant))
+        let status = createCollisionShape(position, orienation, .plane(normal, constant))
+        return getCollisionShapeUniqueId(status)
+    }
+
+    @discardableResult
+    public final func createCollisionShapeMesh(fileName: String, scale: Vector3 = .one, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
+        let status = createCollisionShape(position, orienation, .mesh(fileName, scale))
+        return getCollisionShapeUniqueId(status)
+    }
+
+    @discardableResult
+    public final func createCollisionShapeConvexMesh(vertices: [Vector3], position: Vector3 = .zero, orienation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
+        let status = createCollisionShape(position, orienation, .convexMesh(scale, vertices))
+        return getCollisionShapeUniqueId(status)
+    }
+
+    @discardableResult
+    public final func createCollisionShapeConcaveMesh(vertices: [Vector3], indices: [Int32], position: Vector3 = .zero, orienation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
+        let status = createCollisionShape(position, orienation, .concaveMesh(scale, vertices, indices))
         return getCollisionShapeUniqueId(status)
     }
 
@@ -274,12 +292,19 @@ extension BulletPhysicsClient {
 
 // MARK: - internal API
 extension BulletPhysicsClient {
-    final func createCollisionShape(_ shapes: CollisionShape...) -> MemoryStatusHandleResult {
-        build
-            .command(b3CreateCollisionShapeCommandInit)
-            .injectIndexed(shapes.map { $0.closure })
-            .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
-            .submit()
+    final func createCollisionShape(_ position: Vector3, _ orientation: Vector4, _ shape: CollisionShape) -> MemoryStatusHandleResult {
+        position.unsafeScalars { _ in
+            orientation.unsafeScalars { _ in
+                build
+                    .command(b3CreateCollisionShapeCommandInit)
+                    .injectOne(shape.closure)
+                    /*.applyWithStatus { (handle, shapeIndex) in
+                     b3CreateCollisionShapeSetChildTransform(handle, shapeIndex, positionPtr, orientationPtr)
+                     }*/
+                    .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
+                    .submit()
+            }
+        }
     }
 
     final func removeCollisionShape(_ collisionShapeId: Int32) -> MemoryStatusHandleResult {

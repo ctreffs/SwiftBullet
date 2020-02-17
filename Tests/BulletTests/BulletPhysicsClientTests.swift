@@ -108,6 +108,8 @@ public final class BulletPhysicsClientTests: XCTestCase {
         let box1 = client.createMultiBody(collisionShape: boxColl1, visualShape: .noId, mass: 0, basePosition: .zero, baseOrientation: .identity)
         let box2 = client.createMultiBody(collisionShape: boxColl2, visualShape: .noId, mass: 0, basePosition: .init(x: 0, y: 2, z: 0), baseOrientation: .identity)
 
+        XCTAssertEqual(box1.rawValue, 0)
+        XCTAssertEqual(box2.rawValue, 1)
         XCTAssertEqual(client.numBodies, 2)
 
         let cast1 = client.castRay(from: .init(x: 2, y: 0, z: 0),

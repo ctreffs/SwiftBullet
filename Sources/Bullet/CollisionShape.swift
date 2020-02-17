@@ -8,112 +8,78 @@
 import CBullet
 
 public struct CollisionShape {
-    let closure: SettableIndexedClosure
+    let closure: SettableClosure
 
-    init(_ closure: @escaping SettableIndexedClosure) {
+    init(_ closure: @escaping SettableClosure) {
         self.closure = closure
     }
 }
 
 // MARK: - Builder
 extension CollisionShape {
-    // box:         position: Vector3, orientation: Vector4, halfExtents: Vector3
-    public static func box(position: Vector3, orientation: Vector4, halfExtents: Vector3) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    halfExtents.unsafeScalars { halfExtentsPtr in
-                        build
-                            .set { b3CreateCollisionShapeAddBox($0, halfExtentsPtr) }
-                            .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
+    public static func box(_ halfExtents: Vector3) -> CollisionShape {
+        CollisionShape { build in
+            halfExtents.unsafeScalars { halfExtentsPtr in
+                build.set { b3CreateCollisionShapeAddBox($0, halfExtentsPtr) }
+            }
+        }
+    }
+
+    public static func sphere(_ radius: Double) -> CollisionShape {
+        .init { $0.set { b3CreateCollisionShapeAddSphere($0, radius) } }
+    }
+
+    public static func capsule(_ radius: Double, _ height: Double) -> CollisionShape {
+        .init { $0.set { b3CreateCollisionShapeAddCapsule($0, radius, height) } }
+    }
+
+    public static func cylinder(_ radius: Double, _ height: Double) -> CollisionShape {
+        .init { $0.set { b3CreateCollisionShapeAddCylinder($0, radius, height) } }
+    }
+
+    public static func plane(_ normal: Vector3, _ constant: Double) -> CollisionShape {
+        CollisionShape { build in
+            normal.unsafeScalars { planeNormalPtr in
+                build.set { b3CreateCollisionShapeAddPlane($0, planeNormalPtr, constant) }
+            }
+        }
+    }
+
+    public static func mesh(_ fileName: String, _ scale: Vector3) -> CollisionShape {
+        CollisionShape { build in
+            scale.unsafeScalars { scalePtr in
+                build.set { b3CreateCollisionShapeAddMesh($0, fileName, scalePtr) }
+            }
+        }
+    }
+
+    public static func convexMesh(_ meshScale: Vector3, _ vertices: [Vector3]) -> CollisionShape {
+        CollisionShape { build in
+            let numVertices = Int32(vertices.count)
+            let flatVertices = vertices.flatMap { $0 }
+            return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
+                let startVerticesPtr = flatVerticesBufferPtr.baseAddress!
+                return meshScale.unsafeScalars { meshScalePtr in
+                    build.set { b3CreateCollisionShapeAddConvexMesh($0, meshScalePtr, startVerticesPtr, numVertices) }
+                }
+            }
+        }
+    }
+
+    public static func concaveMesh(_ meshScale: Vector3, _ vertices: [Vector3], _ indices: [Int32]) -> CollisionShape {
+        CollisionShape { build in
+            let numVertices = Int32(vertices.count)
+            let flatVertices = vertices.flatMap { $0 }
+            return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
+                let startVerticesPtr = flatVerticesBufferPtr.baseAddress!
+                let numIndices = Int32(indices.count)
+                return indices.withUnsafeBufferPointer { (indicesBufferPtr: UnsafeBufferPointer<Int32>) in
+                    let startIndicesPtr = indicesBufferPtr.baseAddress!
+                    return meshScale.unsafeScalars { meshScalePtr in
+                        build.set { b3CreateCollisionShapeAddConcaveMesh($0, meshScalePtr, startVerticesPtr, numVertices, startIndicesPtr, numIndices) }
                     }
                 }
             }
         }
-    }
-
-    // sphere:      position: Vector3, orientation: Vector4, radius: Double
-    public static func sphere(position: Vector3, orientation: Vector4, radius: Double) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    build
-                        .set { b3CreateCollisionShapeAddSphere($0, radius) }
-                        .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
-                }
-            }
-        }
-    }
-
-    public static func capsule(position: Vector3, orientation: Vector4, radius: Double, height: Double) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    build
-                        .set { b3CreateCollisionShapeAddCapsule($0, radius, height) }
-                        .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
-                }
-            }
-        }
-    }
-
-    public static func cylinder(position: Vector3, orientation: Vector4, radius: Double, height: Double) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    build
-                        .set { b3CreateCollisionShapeAddCylinder($0, radius, height) }
-                        .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
-                }
-            }
-        }
-    }
-
-    public static func plane(position: Vector3, orientation: Vector4, normal: Vector3, constant: Double) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    normal.unsafeScalars { planeNormalPtr in
-                        build
-                            .set { b3CreateCollisionShapeAddPlane($0, planeNormalPtr, constant) }
-                            .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
-                    }
-                }
-            }
-        }
-    }
-
-    public static func mesh(position: Vector3, orientation: Vector4, fileName: String, scale: Vector3) -> CollisionShape {
-        .init { build, shapeIndex -> PhysicsCommandBuilder.Settable in
-            position.unsafeScalars { positionPtr in
-                orientation.unsafeScalars { orientationPtr in
-                    scale.unsafeScalars { scalePtr in
-                        build
-                            .set { b3CreateCollisionShapeAddMesh($0, fileName, scalePtr) }
-                            .apply { b3CreateCollisionShapeSetChildTransform($0, Int32(shapeIndex), positionPtr, orientationPtr) }
-                    }
-                }
-            }
-        }
-    }
-
-    public static func convexMesh(position: Vector3, orientation: Vector4, meshScale: Vector3, vertices: [Vector3]) -> CollisionShape {
-        let numVertices = Int32(vertices.count)
-        let flatVertices = vertices.flatMap { $0 }
-        return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
-            let startVerticesPtr = flatVerticesBufferPtr.baseAddress!
-            return meshScale.unsafeScalars { meshScalePtr in
-                CollisionShape { build, _ in
-                    build
-                        .set {
-                            b3CreateCollisionShapeAddConvexMesh($0, meshScalePtr, startVerticesPtr, numVertices)
-                        }
-                }
-            }
-        }
-    }
-
-    public static func concaveMesh(position: Vector3, orientation: Vector4, fileName: String, scale: Vector3) -> CollisionShape {
-        fatalError()
     }
 }
