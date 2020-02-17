@@ -21,6 +21,10 @@ final class BulletPhysicsClientTests: XCTestCase {
             fatalError(error.localizedDescription)
         }
     }
+    override func tearDown() {
+        super.tearDown()
+        client = nil
+    }
 
     func testSetParameters() {
         let params: [PhysicsParameter] = [

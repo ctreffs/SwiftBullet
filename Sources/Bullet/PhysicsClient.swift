@@ -243,7 +243,7 @@ public final class PhysicsClient: B3PhysicsClient {
 
     public func raycastBatch(from raysFromWorld: [Vector3],
                              to raysToWorld: [Vector3],
-                             numThreads: Threads = .auto) throws -> [RayHitInfo] {
+                             numThreads: BulletPhysicsClient.Threads = .auto) throws -> [RayHitInfo] {
         let cmd = try createRaycastBatchCommand()
 
         raycastBatchSetNumThreads(cmd, numThreads: numThreads.rawValue)
