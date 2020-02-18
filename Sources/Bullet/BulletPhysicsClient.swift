@@ -7,8 +7,6 @@
 
 import CBullet
 
-// https://github.com/bulletphysics/bullet3/blob/master/examples/SharedMemory/PhysicsClientExample.cpp
-// https://github.com/goretkin/Bullet.jl/blob/master/src/wrap.jl
 open class BulletPhysicsClient {
     @usableFromInline let clientHandle: b3PhysicsClientHandle
 
