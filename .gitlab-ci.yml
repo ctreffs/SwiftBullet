@@ -10,8 +10,7 @@ before_script:
   - apt-get install -y -qq pkg-config     # PKG-config
   - apt-get install -y -qq libbullet2.88   # Bullet 2.88
   - apt-get install -y -qq libbullet-dev=2.88+dfsg-2build1    # Bullet dev 2.88
-  - ls -la /usr/include/
-  
+  - ls -la /usr/include/bullet/
   
 stages: 
   - test
