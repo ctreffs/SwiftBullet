@@ -5,5 +5,5 @@
 #include "apple_macOS.h"
 #endif
 #else
-// TODO: other platforms
+#include "linux.h"
 #endif
