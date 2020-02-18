@@ -1,0 +1,37 @@
+image: swift:5.1.3
+
+before_script:
+  # use the Gitlab CI Job token to login for all git clones on the machine.
+  - echo -e "machine gitlab.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > ~/.netrc
+  # update dependency source list to more modern linux distribution https://wiki.ubuntuusers.de/sources.list/
+  - echo -e "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" >> /etc/apt/sources.list
+  #- echo -e "deb http://archive.ubuntu.com/ubuntu eoan-updates main restricted universe multiverse" >> /etc/apt/sources.list
+  - apt-get update -qq 
+  - apt-get install -y -qq pkg-config     # PKG-config
+  - apt-get install -y -qq libbullet=2.88+dfsg-2build1   # Bullet 2.88
+  - apt-get install -y -qq libbullet-dev=2.88+dfsg-2build1    # Bullet dev 2.88
+  
+
+stages: 
+  - test
+  - build_release
+  
+build_project:
+  stage: build_release
+  script:
+    - swift package reset
+    - swift build -c release
+  tags:
+    - docker
+  only:
+    - master
+
+test_project:
+  stage: test
+  variables:
+    GIT_DEPTH: "50"
+  script:
+    - swift package reset
+    - swift test
+  tags:
+    - docker
