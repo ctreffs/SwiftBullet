@@ -1,9 +1,9 @@
 #ifdef __APPLE__
 #ifdef __IPHONEOS__
-// TODO:
+// TODO: mobile apple platforms
 #else
 #include "apple_macOS.h"
 #endif
 #else
-// TODO:
+#include "linux.h"
 #endif
