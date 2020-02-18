@@ -77,51 +77,49 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
-    public final func createCollisionShapeBox(halfExtents: Vector3, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .box(halfExtents))
+    public final func createCollisionShape(_ shape: CollisionShape, at position: Vector3, with orientation: Vector4) -> CollisionShapeId {
+        let status = createCollisionShape(position, orientation, shape)
         return getCollisionShapeUniqueId(status)
     }
 
     @discardableResult
-    public final func createCollisionShapeSphere(radius: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .sphere(radius))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeBox(halfExtents: Vector3, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.box(halfExtents), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapeCapsule(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .capsule(radius, height))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeSphere(radius: Double, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.sphere(radius), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapeCylinder(radius: Double, height: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .cylinder(radius, height))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeCapsule(radius: Double, height: Double, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.capsule(radius, height), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapePlane(normal: Vector3, constant: Double, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .plane(normal, constant))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeCylinder(radius: Double, height: Double, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.cylinder(radius, height), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapeMesh(fileName: String, scale: Vector3 = .one, position: Vector3 = .zero, orienation: Vector4 = .identity) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .mesh(fileName, scale))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapePlane(normal: Vector3, constant: Double, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.plane(normal, constant), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapeConvexMesh(vertices: [Vector3], position: Vector3 = .zero, orienation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .convexMesh(scale, vertices))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeMesh(fileName: String, scale: Vector3 = .one, position: Vector3 = .zero, orientation: Vector4 = .identity) -> CollisionShapeId {
+        createCollisionShape(.mesh(fileName, scale), at: position, with: orientation)
     }
 
     @discardableResult
-    public final func createCollisionShapeConcaveMesh(vertices: [Vector3], indices: [Int32], position: Vector3 = .zero, orienation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
-        let status = createCollisionShape(position, orienation, .concaveMesh(scale, vertices, indices))
-        return getCollisionShapeUniqueId(status)
+    public final func createCollisionShapeConvexMesh(vertices: [Vector3], position: Vector3 = .zero, orientation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
+        createCollisionShape(.convexMesh(scale, vertices), at: position, with: orientation)
+    }
+
+    @discardableResult
+    public final func createCollisionShapeConcaveMesh(vertices: [Vector3], indices: [Int32], position: Vector3 = .zero, orientation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
+        createCollisionShape(.concaveMesh(scale, vertices, indices), at: position, with: orientation)
     }
 
     @discardableResult
