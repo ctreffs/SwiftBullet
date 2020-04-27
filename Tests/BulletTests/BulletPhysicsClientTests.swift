@@ -146,8 +146,8 @@ public final class BulletPhysicsClientTests: XCTestCase {
     func testGetAABB() {
         let extent: Double = .random(in: 0.001...1000)
 
-        let c1 = client.createCollisionShapeBox(halfExtents: .init(repeating: extent))
-        let box = client.createMultiBody(collisionShape: c1, visualShape: .noId, mass: 0, basePosition: .zero, baseOrientation: .identity)
+        let shape = client.createCollisionShapeBox(halfExtents: .init(repeating: extent))
+        let box = client.createMultiBody(collisionShape: shape, visualShape: .noId, mass: 0, basePosition: .zero, baseOrientation: .identity)
 
         XCTAssertEqual(box.rawValue, 0)
 
@@ -319,6 +319,7 @@ public final class BulletPhysicsClientTests: XCTestCase {
 
         XCTAssertNotNil(dynamics)
 
+        // swiftlint:disable:next force_unwrapping
         XCTAssertEqual(dynamics!.mass, mass, accuracy: 1e-6)
     }
 }
