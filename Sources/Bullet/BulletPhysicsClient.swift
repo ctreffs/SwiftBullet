@@ -367,6 +367,7 @@ extension BulletPhysicsClient {
             }
     }
 
+    // swiftlint:disable:next function_parameter_count
     func makeMultiBody(collisionShape: CollisionShapeId,
                        visualShape: VisualShapeId,
                        mass: Double,
