@@ -21,7 +21,7 @@ let package = Package(
             pkgConfig: "bullet",
             providers: [
                 .brew(["bullet"]),
-                .apt(["libbullet2.88", "libbullet-dev=2.88+dfsg-2build1"])
+                .apt(["libbullet2.89", "libbullet-dev=2.89+dfsg-2build1"])
         ])
     ]
 )

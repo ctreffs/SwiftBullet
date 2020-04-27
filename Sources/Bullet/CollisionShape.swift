@@ -60,7 +60,7 @@ extension CollisionShape {
             return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
                 let startVerticesPtr = flatVerticesBufferPtr.baseAddress!
                 return meshScale.unsafeScalars { meshScalePtr in
-                    build.set { b3CreateCollisionShapeAddConvexMesh($0, meshScalePtr, startVerticesPtr, numVertices) }
+                    build.setUsingClient { b3CreateCollisionShapeAddConvexMesh($0, $1, meshScalePtr, startVerticesPtr, numVertices) }
                 }
             }
         }
@@ -76,7 +76,7 @@ extension CollisionShape {
                 return indices.withUnsafeBufferPointer { (indicesBufferPtr: UnsafeBufferPointer<Int32>) in
                     let startIndicesPtr = indicesBufferPtr.baseAddress!
                     return meshScale.unsafeScalars { meshScalePtr in
-                        build.set { b3CreateCollisionShapeAddConcaveMesh($0, meshScalePtr, startVerticesPtr, numVertices, startIndicesPtr, numIndices) }
+                        build.setUsingClient { b3CreateCollisionShapeAddConcaveMesh($0, $1, meshScalePtr, startVerticesPtr, numVertices, startIndicesPtr, numIndices) }
                     }
                 }
             }

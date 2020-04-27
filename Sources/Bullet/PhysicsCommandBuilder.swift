@@ -62,6 +62,22 @@ public struct PhysicsCommandBuilder {
             }
         }
 
+        func setUsingClient(_ function: String = #function, _ line: Int = #line, _ closure: (b3PhysicsClientHandle, b3SharedMemoryCommandHandle) -> Int32) -> Settable {
+            switch cmd {
+            case let .success(handle):
+                let status = closure(client, handle)
+
+                if status >= 0 {
+                    return Settable(client, .success(handle), status)
+                } else {
+                    return Settable(client, .failure(Error.commandFailedWithStatusCode(status, function, line)), status)
+                }
+
+            case let .failure(error):
+                return Settable(client, .failure(error), status)
+            }
+        }
+
         func injectOne(_ closure: (Settable) -> Settable) -> Settable {
             closure(self)
         }
