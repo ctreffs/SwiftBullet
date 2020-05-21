@@ -52,34 +52,4 @@ extension CollisionShape {
             }
         }
     }
-
-    public static func convexMesh(_ meshScale: Vector3, _ vertices: [Vector3]) -> CollisionShape {
-        CollisionShape { build in
-            let numVertices = Int32(vertices.count)
-            let flatVertices = vertices.flatMap { $0 }
-            return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
-                let startVerticesPtr = flatVerticesBufferPtr.baseAddress
-                return meshScale.unsafeScalars { meshScalePtr in
-                    build.setUsingClient { b3CreateCollisionShapeAddConvexMesh($0, $1, meshScalePtr, startVerticesPtr, numVertices) }
-                }
-            }
-        }
-    }
-
-    public static func concaveMesh(_ meshScale: Vector3, _ vertices: [Vector3], _ indices: [Int32]) -> CollisionShape {
-        CollisionShape { build in
-            let numVertices = Int32(vertices.count)
-            let flatVertices = vertices.flatMap { $0 }
-            return flatVertices.withUnsafeBufferPointer { (flatVerticesBufferPtr: UnsafeBufferPointer<Double>) in
-                let startVerticesPtr = flatVerticesBufferPtr.baseAddress
-                let numIndices = Int32(indices.count)
-                return indices.withUnsafeBufferPointer { (indicesBufferPtr: UnsafeBufferPointer<Int32>) in
-                    let startIndicesPtr = indicesBufferPtr.baseAddress
-                    return meshScale.unsafeScalars { meshScalePtr in
-                        build.setUsingClient { b3CreateCollisionShapeAddConcaveMesh($0, $1, meshScalePtr, startVerticesPtr, numVertices, startIndicesPtr, numIndices) }
-                    }
-                }
-            }
-        }
-    }
 }

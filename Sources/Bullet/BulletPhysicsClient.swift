@@ -113,16 +113,6 @@ open class BulletPhysicsClient {
     }
 
     @discardableResult
-    public final func createCollisionShapeConvexMesh(vertices: [Vector3], position: Vector3 = .zero, orientation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
-        createCollisionShape(.convexMesh(scale, vertices), at: position, with: orientation)
-    }
-
-    @discardableResult
-    public final func createCollisionShapeConcaveMesh(vertices: [Vector3], indices: [Int32], position: Vector3 = .zero, orientation: Vector4 = .identity, scale: Vector3 = .one) -> CollisionShapeId {
-        createCollisionShape(.concaveMesh(scale, vertices, indices), at: position, with: orientation)
-    }
-
-    @discardableResult
     public final func removeCollisionShape(_ shapeId: CollisionShapeId) -> MemoryStatusHandleResult {
         removeCollisionShape(shapeId.rawValue)
     }
@@ -436,8 +426,8 @@ extension BulletPhysicsClient {
 
         // SIMD3 values are stored in a SIMD4Storage,
         // so you can not directly map their memory, hence the flapMap here
-        var raysFromWorldValues: [Double] = raysFromWorld.flatMap { $0 }
-        var raysToWorldValues: [Double]   = raysToWorld.flatMap { $0 }
+        var raysFromWorldValues: [Double] = raysFromWorld.flatMap { [$0.x, $0.y, $0.z].makeIterator() }
+        var raysToWorldValues: [Double]   = raysToWorld.flatMap { [$0.x, $0.y, $0.z].makeIterator() }
 
         return build
             .command(b3CreateRaycastBatchCommandInit)
@@ -445,8 +435,6 @@ extension BulletPhysicsClient {
             .apply { b3RaycastBatchAddRays(clientHandle, $0, &raysFromWorldValues, &raysToWorldValues, numRays) }
             .expect(CMD_REQUEST_RAY_CAST_INTERSECTIONS_COMPLETED)
             .submit()
-
-        // b3RaycastBatchSetParentObject(<#T##commandHandle: b3SharedMemoryCommandHandle!##b3SharedMemoryCommandHandle!#>, <#T##parentObjectUniqueId: Int32##Int32#>, <#T##parentLinkIndex: Int32##Int32#>)
     }
 
     func applyExternalForce(bodyUniqueId: Int32, linkId: Int32, force: Vector3, position: Vector3, flag: Int32) -> MemoryStatusHandleResult {
