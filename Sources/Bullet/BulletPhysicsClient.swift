@@ -287,8 +287,8 @@ extension BulletPhysicsClient {
                     .applyWithStatus { handle, shapeIndex in
                         b3CreateCollisionShapeSetChildTransform(handle, shapeIndex, positionPtr, orientationPtr)
                     }
-                .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
-                .submit()
+                    .expect(CMD_CREATE_COLLISION_SHAPE_COMPLETED)
+                    .submit()
             }
         }
     }
@@ -380,8 +380,8 @@ extension BulletPhysicsClient {
                                                          baseInertialFramePosPtr,
                                                          baseInertialFrameOriPtr)
                             }
-                        .expect(CMD_CREATE_MULTI_BODY_COMPLETED)
-                        .submit()
+                            .expect(CMD_CREATE_MULTI_BODY_COMPLETED)
+                            .submit()
                     }
                 }
             }
