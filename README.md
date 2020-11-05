@@ -26,7 +26,7 @@ apt-get install -y -qq libbullet-dev=2.88+dfsg-2build1
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ### Notes
 
