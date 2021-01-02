@@ -17,7 +17,7 @@ extension BulletPhysicsClientTests {
         ("testGetDynamics", testGetDynamics),
         ("testRemoveCollisionShape", testRemoveCollisionShape),
         ("testSetParameters", testSetParameters),
-        ("testStepSimulation", testStepSimulation)
+        ("testStepSimulation", testStepSimulation),
     ]
 }
 
@@ -29,14 +29,14 @@ extension SIMDUnsafeTests {
         ("testSIMD2UnsafePointer", testSIMD2UnsafePointer),
         ("testSIMD3UnsafePointer", testSIMD3UnsafePointer),
         ("testSIMD4UnsafePointer", testSIMD4UnsafePointer),
-        ("testSIMDArrayPointer", testSIMDArrayPointer)
+        ("testSIMDArrayPointer", testSIMDArrayPointer),
     ]
 }
 
 public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(BulletPhysicsClientTests.__allTests__BulletPhysicsClientTests),
-        testCase(SIMDUnsafeTests.__allTests__SIMDUnsafeTests)
+        testCase(SIMDUnsafeTests.__allTests__SIMDUnsafeTests),
     ]
 }
 #endif
