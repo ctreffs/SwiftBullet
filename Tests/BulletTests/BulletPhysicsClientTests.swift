@@ -122,7 +122,7 @@ public final class BulletPhysicsClientTests: XCTestCase {
 
     func testGetActualPlacement() {
         let origPos: Vector3 = .init(x: 1, y: 2, z: 3)
-        let origOri: Vector4 = .init(0.258_198_887_109_756_47, 0.516_397_833_824_157_71, 0.774_596_691_131_591_8, 0.258_198_887_109_756_47)
+        let origOri: Vector4 = .init(0.258_198_875_839_411_04, 0.516_397_811_283_464_3, 0.774_596_657_320_554_3, 0.258_198_875_839_411_04)
 
         let collisionBox = client.createCollisionShapeBox(halfExtents: .init(repeating: 0.5))
         let box = client.createMultiBody(collisionShape: collisionBox,

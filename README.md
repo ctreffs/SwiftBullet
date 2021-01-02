@@ -8,7 +8,7 @@
 
 ### macOS
 
-uses Bullet 2.89
+uses Bullet stable 3.08
 
 ```
 brew install bullet

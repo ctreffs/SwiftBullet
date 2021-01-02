@@ -22,12 +22,12 @@ extension ChangeDynamicsInfo {
 
     // b3ChangeDynamicsInfoSetActivationState
     public static func activationState(_ activationState: Int32) -> ChangeDynamicsInfo {
-        .init { build, bodyId, linkId in build.set { b3ChangeDynamicsInfoSetActivationState($0, bodyId, activationState) } }
+        .init { build, bodyId, _ in build.set { b3ChangeDynamicsInfoSetActivationState($0, bodyId, activationState) } }
     }
 
     // b3ChangeDynamicsInfoSetAngularDamping
     public static func angularDamping(_ angularDamping: Double) -> ChangeDynamicsInfo {
-        .init { build, bodyId, linkId in build.set { b3ChangeDynamicsInfoSetAngularDamping($0, bodyId, angularDamping) } }
+        .init { build, bodyId, _ in build.set { b3ChangeDynamicsInfoSetAngularDamping($0, bodyId, angularDamping) } }
     }
     // b3ChangeDynamicsInfoSetCcdSweptSphereRadius
     public static func ccdSweptSphereRadius(_ ccdSweptSphereRadius: Double) -> ChangeDynamicsInfo {
@@ -52,7 +52,7 @@ extension ChangeDynamicsInfo {
     }
 
     public static func linearDamping (_ linearDamping: Double) -> ChangeDynamicsInfo {
-        .init { build, bodyId, linkId in build.set { b3ChangeDynamicsInfoSetLinearDamping($0, bodyId, linearDamping) } }
+        .init { build, bodyId, _ in build.set { b3ChangeDynamicsInfoSetLinearDamping($0, bodyId, linearDamping) } }
     }
 
     public static func localInertiaDiagonal (_ localInertiaDiagonal: Vector3) -> ChangeDynamicsInfo {
