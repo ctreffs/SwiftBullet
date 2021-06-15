@@ -19,5 +19,11 @@ module CBullet [system][extern_c] {
   link "GIMPACTUtils"
   link "HACD"
   link "LinearMath"
+  link "BulletExampleBrowserLib"
+  link "BulletRoboticsGUI"
+  link "BussIK"
+  link "OpenGLWindow"
+  link "clsocket"
+  link "gwen"
   export *
 }

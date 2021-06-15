@@ -24,6 +24,10 @@ apt-get install -y -qq libbullet-dev=2.88+dfsg-2build1
 
 ```
 
+## Documentation
+
+PyBullet C-API: <https://github.com/neachdainn/rubullet/blob/master/rubullet/src/client.rs>
+
 ## License
 
 [MIT](LICENSE)

@@ -1,8 +1,11 @@
+#define BT_ENABLE_ENET
+#define BT_ENABLE_CLSOCKET
+#define BT_ENABLE_PHYSX
+#define BT_ENABLE_DART
+#define BT_ENABLE_MUJOCO
+
 #ifdef __APPLE__
-#ifdef __IPHONEOS__
-// TODO: mobile apple platforms
-#else
-#include "apple_macOS.h"
+#include "apple.h"
 #endif
 #else
 #include "linux.h"

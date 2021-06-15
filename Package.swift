@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 import PackageDescription
 
 let package = Package(
@@ -22,6 +22,9 @@ let package = Package(
             providers: [
                 .brew(["bullet"]),
                 .apt(["libbullet2.89", "libbullet-dev=2.89+dfsg-2build1"])
-        ])
-    ]
+            ])
+    ],
+    cLanguageStandard: .gnu11,
+    cxxLanguageStandard: .gnucxx11
+    
 )
