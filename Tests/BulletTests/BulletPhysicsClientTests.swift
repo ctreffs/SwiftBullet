@@ -139,8 +139,13 @@ public final class BulletPhysicsClientTests: XCTestCase {
         let status = client.getActualPositionAndOrientation(multiBody: box, position: &pos, orientation: &ori)
         XCTAssertResultIsSuccess(status)
 
-        XCTAssertEqual(pos, origPos)
-        XCTAssertEqual(ori, origOri)
+        XCTAssertEqual(pos.x, origPos.x, accuracy: 1e-6)
+        XCTAssertEqual(pos.y, origPos.y, accuracy: 1e-6)
+        XCTAssertEqual(pos.z, origPos.z, accuracy: 1e-6)
+        XCTAssertEqual(ori.x, origOri.x, accuracy: 1e-6)
+        XCTAssertEqual(ori.y, origOri.y, accuracy: 1e-6)
+        XCTAssertEqual(ori.z, origOri.z, accuracy: 1e-6)
+        XCTAssertEqual(ori.w, origOri.w, accuracy: 1e-6)
     }
 
     func testGetAABB() {

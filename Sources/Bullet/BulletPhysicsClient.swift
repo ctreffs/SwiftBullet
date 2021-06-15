@@ -17,7 +17,6 @@ open class BulletPhysicsClient {
 
     deinit {
         actualStateQPtr.deallocate()
-
         b3DisconnectSharedMemory(clientHandle)
     }
 
