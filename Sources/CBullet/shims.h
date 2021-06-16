@@ -8,6 +8,9 @@
 #ifdef __APPLE__
 
 // === APPLE =========
+// This solves the following error in the CollisionSdkC_Api:
+// Must use 'struct' tag to refer to type 'lwContactPoint'
+typedef struct lwContactPoint lwContactPoint;
 
 #include <Bullet/SharedMemory/SharedMemoryPublic.h>
 #include <Bullet/SharedMemory/PhysicsClientC_API.h>
@@ -19,7 +22,7 @@
 #include <Bullet/SharedMemory/PhysicsDirectC_API.h>
 #include <Bullet/SharedMemory/PhysicsLoopBackC_API.h>
 #include <Bullet/SharedMemory/SharedMemoryInProcessPhysicsC_API.h>
-// #include <Bullet/Collision/CollisionSdkC_Api.h> // -> Must use 'struct' tag to refer to type 'lwContactPoint'
+#include <Bullet/Collision/CollisionSdkC_Api.h>
 #include <Bullet/SharedMemory/dart/DARTPhysicsC_API.h>
 #include <Bullet/SharedMemory/mujoco/MuJoCoPhysicsC_API.h>
 #include <Bullet/SharedMemory/physx/PhysXC_API.h>
